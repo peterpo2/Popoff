@@ -54,12 +54,15 @@ internal class DatabaseInitializer : IDatabaseInitializer
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         var existingProject = await _context.Projects
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Code == "LTLNA", cancellationToken);
 
         if (existingProject != null)
         {
-            _logger.LogInformation("Latelina project already exists; skipping initial seed.");
+            _logger.LogInformation(existingProject.IsDeleted
+                ? "Latelina project exists in a soft-deleted state; leaving data untouched per retention policy."
+                : "Latelina project already exists; skipping initial seed.");
             return;
         }
 
@@ -69,34 +72,25 @@ internal class DatabaseInitializer : IDatabaseInitializer
 
         var admin = await _context.Users
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(u => u.Email == "admin@popoffcrm.com", cancellationToken)
-            ?? new User
-            {
-                Id = AdminId,
-                Email = "admin@popoffcrm.com",
-                DisplayName = "Petar Popov",
-                PasswordHash = AdminPasswordHash,
-                Role = "Admin",
-                CreatedOn = createdOn,
-                IsDeleted = false
-            };
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == "admin@popoffcrm.com", cancellationToken);
+
+        if (admin?.IsDeleted == true)
+        {
+            _logger.LogInformation("Admin user is soft deleted; not recreating to respect retained data.");
+            return;
+        }
 
         var server = await _context.Servers
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(s => s.Id == ServerId || s.Name == "Local-Docker-Host", cancellationToken)
-            ?? new Server
-            {
-                Id = ServerId,
-                Name = "Local-Docker-Host",
-                Description = "Placeholder server running in docker-compose for local testing.",
-                HostName = "localhost",
-                IpAddress = "127.0.0.1",
-                ConnectionType = "LocalShell",
-                ConnectionData = null,
-                IsActive = true,
-                CreatedOn = createdOn,
-                IsDeleted = false
-            };
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == ServerId || s.Name == "Local-Docker-Host", cancellationToken);
+
+        if (server?.IsDeleted == true)
+        {
+            _logger.LogInformation("Local-Docker-Host server is soft deleted; not recreating to respect retained data.");
+            return;
+        }
 
         var project = new Project
         {
@@ -130,23 +124,36 @@ internal class DatabaseInitializer : IDatabaseInitializer
             CreatedOn = createdOn
         };
 
-        if (admin.IsDeleted)
+        if (admin == null)
         {
-            admin.IsDeleted = false;
-            _context.Users.Update(admin);
-        }
-        else if (_context.Entry(admin).State == EntityState.Detached)
-        {
+            admin = new User
+            {
+                Id = AdminId,
+                Email = "admin@popoffcrm.com",
+                DisplayName = "Petar Popov",
+                PasswordHash = AdminPasswordHash,
+                Role = "Admin",
+                CreatedOn = createdOn,
+                IsDeleted = false
+            };
             await _context.Users.AddAsync(admin, cancellationToken);
         }
 
-        if (server.IsDeleted)
+        if (server == null)
         {
-            server.IsDeleted = false;
-            _context.Servers.Update(server);
-        }
-        else if (_context.Entry(server).State == EntityState.Detached)
-        {
+            server = new Server
+            {
+                Id = ServerId,
+                Name = "Local-Docker-Host",
+                Description = "Placeholder server running in docker-compose for local testing.",
+                HostName = "localhost",
+                IpAddress = "127.0.0.1",
+                ConnectionType = "LocalShell",
+                ConnectionData = null,
+                IsActive = true,
+                CreatedOn = createdOn,
+                IsDeleted = false
+            };
             await _context.Servers.AddAsync(server, cancellationToken);
         }
 
