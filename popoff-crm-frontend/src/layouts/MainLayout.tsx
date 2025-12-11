@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Sidebar } from '../components/Sidebar';
 import { Header } from '../components/Header';
 import { BackgroundEffects } from '../components/BackgroundEffects';
 import { CursorGlow } from '../components/CursorGlow';
-import { apiClient } from '../api/client';
-import { User } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    apiClient.getUser().then(setUser);
-  }, []);
+  const { user, logout } = useAuth();
 
   const titles: Record<string, string> = {
     '/': 'Dashboard',
@@ -35,7 +30,7 @@ export const MainLayout: React.FC = () => {
       <Sidebar />
       <main className="relative z-10 flex-1 px-8">
         <div className="max-w-6xl mx-auto">
-          <Header title={title} subtitle="Your code realm is humming along." user={user ?? undefined} />
+          <Header title={title} subtitle="Your code realm is humming along." user={user ?? undefined} onLogout={logout} />
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
