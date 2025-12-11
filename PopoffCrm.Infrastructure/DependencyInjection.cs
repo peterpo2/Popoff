@@ -14,8 +14,10 @@ public static class DependencyInjection
     {
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
+        var connectionString = configuration.GetConnectionString("Default");
+
         services.AddDbContext<PopoffCrmDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDockerService, DockerService>();
