@@ -23,12 +23,12 @@ public class HealthCheckBackgroundService : BackgroundService
         IServiceScopeFactory scopeFactory,
         IHttpClientFactory httpClientFactory,
         ILogger<HealthCheckBackgroundService> logger,
-        IOptionsSnapshot<HealthCheckSettings> settings)
+        IOptionsMonitor<HealthCheckSettings> settings)
     {
         _scopeFactory = scopeFactory;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
-        _settings = settings.Value;
+        _settings = settings.CurrentValue;
         _interval = TimeSpan.FromSeconds(Math.Max(1, _settings.IntervalSeconds));
     }
 

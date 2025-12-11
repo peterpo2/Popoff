@@ -26,6 +26,7 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDockerService, DockerService>();
+        services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
         services.AddHostedService<HealthCheckBackgroundService>();
 
         services.AddHttpClient();

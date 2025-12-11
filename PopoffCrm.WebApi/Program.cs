@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PopoffCrm.Infrastructure;
+using PopoffCrm.Infrastructure.Persistence;
 using PopoffCrm.WebApi.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -129,6 +130,16 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Apply pending EF Core migrations and seed the initial Latelina data set if the database is empty.
+// Future schema changes should be created with:
+// dotnet ef migrations add <Name> -p PopoffCrm.Infrastructure -s PopoffCrm.WebApi
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>();
+    await initializer.ApplyMigrationsAsync();
+    await initializer.SeedAsync();
+}
 
 var httpsRedirectionEnabled = builder.Configuration.GetValue("EnableHttpsRedirection", false);
 

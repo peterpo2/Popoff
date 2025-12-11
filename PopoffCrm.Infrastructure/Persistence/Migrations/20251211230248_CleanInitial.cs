@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace PopoffCrm.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class CleanInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -165,30 +163,6 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         principalTable: "Environments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Projects",
-                columns: new[] { "Id", "Code", "CreatedOn", "Description", "IsDeleted", "Name", "RepositoryUrl", "UpdatedOn" },
-                values: new object[] { new Guid("c0aa483c-f17e-47a1-98dc-8b5e0c9cba10"), "LTLNA", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Latelina project", false, "Latelina", null, null });
-
-            migrationBuilder.InsertData(
-                table: "Servers",
-                columns: new[] { "Id", "ConnectionData", "ConnectionType", "CreatedOn", "Description", "HostName", "IpAddress", "IsActive", "IsDeleted", "Name", "UpdatedOn" },
-                values: new object[] { new Guid("6f7f8455-43c2-4b61-86a3-a0c24b5c7d77"), null, "LocalShell", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Hetzner production server", "Hetzner-Prod-1", "192.168.1.1", true, false, "Hetzner-Prod-1", null });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "CreatedOn", "DisplayName", "Email", "IsDeleted", "PasswordHash", "Role", "UpdatedOn" },
-                values: new object[] { new Guid("b4f1bf76-df8a-4b77-9e74-8e5898dd34b8"), new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Petar Popov", "admin@popoffcrm.com", false, "10000.D73617EBFC538BD6ED61FB63D075601C.3E92952FDA90A4D3BB7CCB80A6D38DDB17AEA347E520408CF8A4B4CF9D892457", "Admin", null });
-
-            migrationBuilder.InsertData(
-                table: "Environments",
-                columns: new[] { "Id", "ApiUrl", "CreatedOn", "DockerComposePath", "DockerProjectName", "FrontendUrl", "GitBranch", "IsDeleted", "IsProduction", "Name", "ProjectId", "ServerId", "Slug", "UpdatedOn" },
-                values: new object[,]
-                {
-                    { new Guid("832a84f0-5d6d-4f1b-8d96-7716b7a6c1a0"), "https://latelina.popoff.com/api", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), "/opt/latelina-prod/docker-compose.yml", "latelina-prod", null, "main", false, true, "Prod", new Guid("c0aa483c-f17e-47a1-98dc-8b5e0c9cba10"), new Guid("6f7f8455-43c2-4b61-86a3-a0c24b5c7d77"), "prod", null },
-                    { new Guid("b4fa7483-59ae-4d0f-8ebd-0d0a0c6a1b44"), "https://test.latelina.popoff.com/api", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc), "/opt/latelina-test/docker-compose.yml", "latelina-test", null, "develop", false, false, "Test", new Guid("c0aa483c-f17e-47a1-98dc-8b5e0c9cba10"), new Guid("6f7f8455-43c2-4b61-86a3-a0c24b5c7d77"), "test", null }
                 });
 
             migrationBuilder.CreateIndex(

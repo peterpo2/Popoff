@@ -8,7 +8,11 @@ public class PopoffCrmDbContextFactory : IDesignTimeDbContextFactory<PopoffCrmDb
     public PopoffCrmDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<PopoffCrmDbContext>();
-        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=PopoffCrmDb;Trusted_Connection=True;TrustServerCertificate=True;");
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Default")
+            ?? Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__DEFAULT")
+            ?? "Server=localhost,1433;Database=PopoffCrmDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;";
+
+        optionsBuilder.UseSqlServer(connectionString);
         return new PopoffCrmDbContext(optionsBuilder.Options);
     }
 }
