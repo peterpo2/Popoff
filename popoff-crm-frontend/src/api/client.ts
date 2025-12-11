@@ -5,7 +5,9 @@ import {
   Deployment,
   Environment,
   EnvironmentWithProject,
+  HealthCheckResult,
   HealthOverview,
+  LogEntry,
   Project,
   Server,
   User,
@@ -120,8 +122,19 @@ export const apiClient = {
         });
       }
     ),
+  getHealthByEnvironment: (environmentId: string) =>
+    withFallback(
+      () => httpClient.get<HealthCheckResult[]>(`/api/health/environment/${environmentId}`),
+      () => mockClient.getHealth({ environmentId })
+    ),
   getEnvironmentMatrix: () => withFallback(fetchEnvironmentsWithProjects, () => mockClient.getEnvironmentMatrix()),
-  getLogs: () => mockClient.getLogs(),
+  getLogsByEnvironment: (environmentId: string, tail = 200) =>
+    withFallback(
+      () => httpClient.get<LogEntry[]>(
+        `/api/logs/environment/${environmentId}?tail=${tail}`
+      ),
+      () => mockClient.getLogs({ environmentId })
+    ),
   getDashboardStats: () =>
     withFallback(async () => {
       const [projects, servers, environments, deployments] = await Promise.all([

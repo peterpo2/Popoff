@@ -277,9 +277,12 @@ export const mockClient = {
       : deployments;
     return filtered.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
   },
-  async getHealth() {
+  async getHealth(filter?: { environmentId?: string }) {
     await delay();
-    return healthChecks;
+    const filtered = filter?.environmentId
+      ? healthChecks.filter((h) => h.environmentId === filter.environmentId)
+      : healthChecks;
+    return filtered.sort((a, b) => b.checkedOn.localeCompare(a.checkedOn));
   },
   async getLogs(filter?: { environmentId?: string }) {
     await delay();

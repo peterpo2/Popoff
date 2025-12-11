@@ -1,14 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '../components/Card';
 import { apiClient } from '../api/client';
-import { LogEntry } from '../types';
-import { EnvironmentWithProject, Project } from '../types';
-
-const levelColors: Record<string, string> = {
-  INFO: 'text-accent-2',
-  WARNING: 'text-accent-1',
-  ERROR: 'text-red-400',
-};
+import { EnvironmentWithProject, LogEntry, Project } from '../types';
 
 export const Logs: React.FC = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -16,21 +9,64 @@ export const Logs: React.FC = () => {
   const [envMatrix, setEnvMatrix] = useState<EnvironmentWithProject[]>([]);
   const [selectedProject, setSelectedProject] = useState('');
   const [selectedEnv, setSelectedEnv] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   useEffect(() => {
     apiClient.getProjects().then(setProjects);
     apiClient.getEnvironmentMatrix().then(setEnvMatrix);
-    apiClient.getLogs().then(setLogs);
   }, []);
 
-  const filteredLogs = useMemo(() => {
-    return logs.filter((log) => {
-      const env = envMatrix.find((e) => e.id === log.environmentId);
-      if (selectedProject && env?.projectId !== selectedProject) return false;
-      if (selectedEnv && env?.id !== selectedEnv) return false;
-      return true;
-    });
-  }, [envMatrix, logs, selectedEnv, selectedProject]);
+  const filteredEnvironments = useMemo(
+    () => envMatrix.filter((env) => !selectedProject || env.projectId === selectedProject),
+    [envMatrix, selectedProject]
+  );
+
+  useEffect(() => {
+    if (selectedEnv) {
+      const envExists = filteredEnvironments.some((env) => env.id === selectedEnv);
+      if (!envExists) {
+        setSelectedEnv('');
+        setLogs([]);
+        return;
+      }
+    }
+  }, [filteredEnvironments, selectedEnv]);
+
+  useEffect(() => {
+    if (!selectedEnv) return;
+
+    const fetchLogs = () => {
+      setIsLoading(true);
+      apiClient
+        .getLogsByEnvironment(selectedEnv, 200)
+        .then((result) => setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp))))
+        .finally(() => setIsLoading(false));
+    };
+
+    fetchLogs();
+
+    if (!autoRefresh) return;
+
+    const interval = setInterval(fetchLogs, 10000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, selectedEnv]);
+
+  const getLineColor = (text: string) => {
+    if (/ERROR/i.test(text)) return 'text-red-400';
+    if (/WARN/i.test(text)) return 'text-accent-1';
+    if (/INFO/i.test(text)) return 'text-accent-2';
+    return 'text-text';
+  };
+
+  const handleRefresh = () => {
+    if (!selectedEnv) return;
+    setIsLoading(true);
+    apiClient
+      .getLogsByEnvironment(selectedEnv, 200)
+      .then((result) => setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp))))
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <div className="space-y-6 pb-12">
@@ -43,6 +79,7 @@ export const Logs: React.FC = () => {
               onChange={(e) => {
                 setSelectedProject(e.target.value);
                 setSelectedEnv('');
+                setLogs([]);
               }}
               className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
@@ -61,20 +98,29 @@ export const Logs: React.FC = () => {
               onChange={(e) => setSelectedEnv(e.target.value)}
               className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
-              <option value="">All</option>
-              {envMatrix
-                .filter((env) => !selectedProject || env.projectId === selectedProject)
-                .map((env) => (
-                  <option key={env.id} value={env.id}>
-                    {env.projectName} – {env.name}
-                  </option>
-                ))}
+              <option value="">Select environment</option>
+              {filteredEnvironments.map((env) => (
+                <option key={env.id} value={env.id}>
+                  {env.projectName} – {env.name}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="flex items-end">
+          <div className="flex items-end gap-3">
+            <label className="flex items-center gap-2 text-sm text-primary">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-border/70 bg-card/70"
+                checked={autoRefresh}
+                onChange={(e) => setAutoRefresh(e.target.checked)}
+                disabled={!selectedEnv}
+              />
+              Auto refresh every 10s
+            </label>
             <button
-              className="rounded-lg bg-accent-2/20 border border-accent-2/40 text-accent-2 px-4 py-2 font-semibold hover:shadow-glow hover:bg-accent-2/25"
-              onClick={() => apiClient.getLogs().then(setLogs)}
+              className="rounded-lg bg-accent-2/20 border border-accent-2/40 text-accent-2 px-4 py-2 font-semibold hover:shadow-glow hover:bg-accent-2/25 disabled:opacity-50"
+              onClick={handleRefresh}
+              disabled={!selectedEnv || isLoading}
             >
               Refresh
             </button>
@@ -83,20 +129,21 @@ export const Logs: React.FC = () => {
       </Card>
 
       <Card>
-        <div className="h-[480px] overflow-auto rounded-xl border border-border/70 bg-card/80 p-4 font-mono text-sm">
-          {filteredLogs.map((log) => {
-            const env = envMatrix.find((e) => e.id === log.environmentId);
-            return (
-              <div key={log.id} className="flex gap-3 py-1 border-b border-border/60 last:border-none">
-                <span className="text-primary text-xs w-40">
-                  {new Date(log.timestamp).toLocaleTimeString()}
-                </span>
-                <span className={`font-semibold w-24 ${levelColors[log.level]}`}>{log.level}</span>
-                <span className="text-text flex-1">{log.message}</span>
-                <span className="text-primary text-xs">{env?.projectCode}/{env?.slug}</span>
-              </div>
-            );
-          })}
+        <div className="h-[480px] overflow-auto rounded-xl border border-border/70 bg-card/80 p-4 font-mono text-sm space-y-2">
+          {!selectedEnv && <div className="text-primary">Select an environment to view logs.</div>}
+          {selectedEnv && isLoading && <div className="text-primary">Loading logs...</div>}
+          {selectedEnv && !isLoading && logs.length === 0 && <div className="text-primary">No logs found.</div>}
+
+          {selectedEnv &&
+            logs.map((log) => {
+              const env = envMatrix.find((e) => e.id === log.environmentId);
+              const line = `[${new Date(log.timestamp).toLocaleTimeString()}] [${log.level}] ${log.message} (${env?.projectCode}/${env?.slug})`;
+              return (
+                <div key={log.id} className={`whitespace-pre-wrap ${getLineColor(line)}`}>
+                  {line}
+                </div>
+              );
+            })}
         </div>
       </Card>
     </div>

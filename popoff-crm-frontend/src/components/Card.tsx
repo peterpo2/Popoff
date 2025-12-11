@@ -1,10 +1,10 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+type CardProps = HTMLMotionProps<'div'> & {
   children: React.ReactNode;
   className?: string;
-}
+};
 
 export const Card: React.FC<CardProps> = ({ children, className = '', ...rest }) => (
   <motion.div
