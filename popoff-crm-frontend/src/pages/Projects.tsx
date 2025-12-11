@@ -2,14 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { apiClient } from '../api/client';
-import { Project } from '../types';
+import { EnvironmentWithProject, Project } from '../types';
 
 export const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [environments, setEnvironments] = useState<EnvironmentWithProject[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiClient.getProjects().then(setProjects);
+    Promise.all([apiClient.getProjects(), apiClient.getEnvironmentMatrix()])
+      .then(([projectsData, envMatrix]) => {
+        setProjects(projectsData);
+        setEnvironments(envMatrix);
+      })
+      .finally(() => setLoading(false));
   }, []);
+
+  const environmentCounts = environments.reduce<Record<string, number>>((acc, env) => {
+    acc[env.projectId] = (acc[env.projectId] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  if (loading) {
+    return <div className="text-primary">Loading projects...</div>;
+  }
 
   return (
     <div className="space-y-6 pb-12">
@@ -26,6 +42,12 @@ export const Projects: React.FC = () => {
                   <div className="text-sm text-primary">{project.code}</div>
                   <h4 className="text-xl font-semibold text-text">{project.name}</h4>
                   <p className="text-primary text-sm mt-1">{project.description}</p>
+                  <div className="mt-3 text-xs text-primary space-y-1">
+                    <div>Environments: {environmentCounts[project.id] ?? 0}</div>
+                    <div>
+                      Created: {project.createdOn ? new Date(project.createdOn).toLocaleDateString() : '—'}
+                    </div>
+                  </div>
                 </div>
                 <Link
                   to={`/projects/${project.id}`}

@@ -15,6 +15,7 @@ export interface Project {
   code: string;
   description?: string | null;
   repositoryUrl?: string | null;
+  createdOn?: string;
 }
 
 export interface Server {
@@ -56,6 +57,7 @@ export interface Deployment {
   branch?: string | null;
   triggerType: string;
   logExcerpt?: string | null;
+  triggeredBy?: string | null;
 }
 
 export interface HealthCheckResult {

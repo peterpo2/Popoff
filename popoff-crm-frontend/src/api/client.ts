@@ -54,7 +54,9 @@ async function fetchEnvironmentsWithProjects(): Promise<EnvironmentWithProject[]
   const projects = await fetchProjects();
   const results = await Promise.all(
     projects.map(async (project) => {
-      const envs = await httpClient.get<Environment[]>(`/api/environment/by-project/${project.id}`);
+      const envs = await httpClient.get<Environment[]>(`/api/environments/by-project/${project.id}`).catch(() =>
+        httpClient.get<Environment[]>(`/api/environment/by-project/${project.id}`)
+      );
       return envs.map((env) => ({ ...env, projectCode: project.code }));
     })
   );
@@ -71,7 +73,10 @@ export const apiClient = {
   getServer: (id: string) =>
     withFallback(() => httpClient.get<Server>(`/api/server/${id}`), () => mockClient.getServer(id)),
   getEnvironmentsByProject: (projectId: string) =>
-    withFallback(() => httpClient.get<Environment[]>(`/api/environment/by-project/${projectId}`), () => mockClient.getEnvironmentsByProject(projectId)),
+    withFallback(
+      () => httpClient.get<Environment[]>(`/api/environments/by-project/${projectId}`),
+      () => mockClient.getEnvironmentsByProject(projectId)
+    ),
   getEnvironment: (id: string) =>
     withFallback(() => httpClient.get<Environment>(`/api/environment/${id}`), () => mockClient.getEnvironment(id)),
   getDeployments: (filter?: { projectId?: string }) =>
@@ -133,4 +138,9 @@ export const apiClient = {
         activeDeployments: deployments.filter((deployment) => deployment.status === 'Running').length,
       } satisfies DashboardStats;
     }, () => mockClient.getDashboardStats()),
+  deployEnvironment: (environmentId: string) =>
+    withFallback(
+      () => httpClient.post<Deployment>(`/api/environments/${environmentId}/deploy`),
+      () => mockClient.deployEnvironment(environmentId)
+    ),
 };

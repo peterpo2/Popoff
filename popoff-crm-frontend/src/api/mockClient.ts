@@ -48,6 +48,7 @@ const projects: Project[] = [
     code: 'LAT',
     description: 'E-commerce storefront for artisan pasta',
     repositoryUrl: 'https://github.com/popoff/latelina',
+    createdOn: '2024-01-12T10:00:00Z',
   },
   {
     id: 'bdd9e0c4-d7ad-47b2-9a63-9f7d57a3a200',
@@ -55,6 +56,7 @@ const projects: Project[] = [
     code: 'SIG',
     description: 'Real-time status monitor for microservices',
     repositoryUrl: 'https://github.com/popoff/signalq',
+    createdOn: '2024-02-18T14:30:00Z',
   },
 ];
 
@@ -137,6 +139,7 @@ const deployments: Deployment[] = [
     branch: 'main',
     triggerType: 'Manual',
     logExcerpt: 'Deployment completed successfully.',
+    triggeredBy: 'Petar Popov',
   },
   {
     id: '0f3a81c5-4c8f-4d9e-a508-4298e7f90702',
@@ -149,6 +152,7 @@ const deployments: Deployment[] = [
     branch: 'develop',
     triggerType: 'Manual',
     logExcerpt: 'Smoke tests passed.',
+    triggeredBy: 'Petar Popov',
   },
   {
     id: 'c6cc1269-dc92-4c23-af4d-d8d0bcf50703',
@@ -161,6 +165,7 @@ const deployments: Deployment[] = [
     branch: 'main',
     triggerType: 'Auto',
     logExcerpt: 'Container healthcheck failed after deploy.',
+    triggeredBy: 'Auto pipeline',
   },
   {
     id: 'e95e9ee3-1c02-4e46-bf90-6a8c3acf0704',
@@ -173,6 +178,7 @@ const deployments: Deployment[] = [
     branch: 'develop',
     triggerType: 'Manual',
     logExcerpt: 'Rolling update in progress...',
+    triggeredBy: 'QA User',
   },
 ];
 
@@ -300,6 +306,24 @@ export const mockClient = {
         serverName: server?.name ?? 'Unknown server',
       };
     });
+  },
+  async deployEnvironment(environmentId: string) {
+    await delay();
+    const deployment: Deployment = {
+      id: crypto.randomUUID(),
+      environmentId,
+      requestedByUserId: user.id,
+      startedAt: new Date().toISOString(),
+      finishedAt: null,
+      status: 'Running',
+      version: 'rolling',
+      branch: 'main',
+      triggerType: 'Manual',
+      logExcerpt: 'Deployment started from mock client.',
+      triggeredBy: user.displayName,
+    };
+    deployments.unshift(deployment);
+    return deployment;
   },
 };
 
