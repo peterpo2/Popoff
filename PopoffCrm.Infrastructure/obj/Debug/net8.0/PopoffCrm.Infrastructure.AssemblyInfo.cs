@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PopoffCrm.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c121f63511b2220bf2f54f48278ae521ce3490c0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95a8da073fcd113cd72d003767edeffbf860df0c")]
 [assembly: System.Reflection.AssemblyProductAttribute("PopoffCrm.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PopoffCrm.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
