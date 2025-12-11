@@ -24,6 +24,7 @@ public class HealthController : ControllerBase
     {
         var latestResults = await _dbContext.HealthCheckResults
             .Include(h => h.Environment)
+            .ThenInclude(e => e.Project)
             .GroupBy(h => h.EnvironmentId)
             .Select(g => g.OrderByDescending(x => x.CheckedOn).First())
             .ToListAsync();

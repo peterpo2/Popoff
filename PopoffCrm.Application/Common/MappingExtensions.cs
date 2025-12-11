@@ -50,6 +50,8 @@ public static class MappingExtensions
 
     public static HealthOverviewDto ToOverviewDto(this HealthCheckResult result) => new(
         result.EnvironmentId,
+        result.Environment?.ProjectId ?? Guid.Empty,
+        result.Environment?.Project?.Name ?? string.Empty,
         result.Environment?.Name ?? string.Empty,
         result.Status,
         result.CheckedOn,

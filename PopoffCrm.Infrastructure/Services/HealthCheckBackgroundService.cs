@@ -3,8 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PopoffCrm.Domain.Entities;
 using PopoffCrm.Infrastructure.Persistence;
+using PopoffCrm.Infrastructure.Settings;
+using PopoffCrm.Infrastructure.Utilities;
 
 namespace PopoffCrm.Infrastructure.Services;
 
@@ -13,16 +16,20 @@ public class HealthCheckBackgroundService : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<HealthCheckBackgroundService> _logger;
-    private readonly TimeSpan _interval = TimeSpan.FromSeconds(60);
+    private readonly HealthCheckSettings _settings;
+    private readonly TimeSpan _interval;
 
     public HealthCheckBackgroundService(
         IServiceScopeFactory scopeFactory,
         IHttpClientFactory httpClientFactory,
-        ILogger<HealthCheckBackgroundService> logger)
+        ILogger<HealthCheckBackgroundService> logger,
+        IOptionsSnapshot<HealthCheckSettings> settings)
     {
         _scopeFactory = scopeFactory;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _settings = settings.Value;
+        _interval = TimeSpan.FromSeconds(Math.Max(1, _settings.IntervalSeconds));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,7 +53,11 @@ public class HealthCheckBackgroundService : BackgroundService
     {
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<PopoffCrmDbContext>();
-        var environments = await dbContext.Environments.AsNoTracking().ToListAsync(cancellationToken);
+        var environments = await dbContext.Environments
+            .AsNoTracking()
+            .Include(e => e.Server)
+            .Where(e => e.Server.IsActive)
+            .ToListAsync(cancellationToken);
 
         foreach (var env in environments)
         {
@@ -55,9 +66,9 @@ public class HealthCheckBackgroundService : BackgroundService
                 continue;
             }
 
-            var url = env.ApiUrl!.TrimEnd('/') + "/health";
+            var url = HealthCheckUrlBuilder.Build(env.ApiUrl!, _settings);
             var client = _httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(10);
+            client.Timeout = TimeSpan.FromSeconds(Math.Max(1, _settings.TimeoutSeconds));
 
             var stopwatch = Stopwatch.StartNew();
             HttpResponseMessage? response = null;
