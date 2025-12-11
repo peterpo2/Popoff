@@ -20,10 +20,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: Server=db;Database=${DB_NAME:-PopoffCrm};User Id=${DB_USER:-sa};Password=${SA_PASSWORD};TrustServerCertificate=True;
       JWT__Key: ${JWT_KEY}
-      Jwt__Issuer: ${JWT_ISSUER}
-      Jwt__Audience: ${JWT_AUDIENCE}
-      AppUrls__PublicBaseUrl: ${PUBLIC_BASE_URL}
-      AppUrls__AllowedOrigins: ${ALLOWED_ORIGINS}
+      JWT__Issuer: ${JWT_ISSUER:-crm.popoff.com}
+      JWT__Audience: ${JWT_AUDIENCE:-crm.popoff.com}
+      AppUrls__PublicBaseUrl: ${PUBLIC_BASE_URL:-http://localhost:5000}
+      AppUrls__AllowedOrigins: ${ALLOWED_ORIGINS:-http://localhost:4173}
       GoogleAuth__ClientId: ${GOOGLE_CLIENT_ID}
       GoogleAuth__ClientSecret: ${GOOGLE_CLIENT_SECRET}
       GoogleAuth__AllowedDomain: ${GOOGLE_ALLOWED_DOMAIN}

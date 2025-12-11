@@ -47,7 +47,7 @@ if (allowedOrigins.Count == 0)
     // Default to the local frontend during development; when the public domain is ready
     // (e.g., https://crm.popoff.com) add it to AppUrls__AllowedOrigins so the hosted
     // frontend can call the API via CORS.
-    allowedOrigins.Add("http://localhost:3000");
+    allowedOrigins.AddRange(new[] { "http://localhost:4173", "http://localhost:3000" });
 }
 
 builder.Services.AddCors(options =>

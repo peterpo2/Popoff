@@ -71,7 +71,11 @@ The solution is split into four projects that align with clean architecture prin
    Edit `.env` and set:
 
    - `SA_PASSWORD` – SQL Server system administrator password (must meet SQL Server complexity requirements).
+   - `DB_NAME`/`DB_USER` – optional database name/user overrides (defaults: `PopoffCrm`/`sa`).
    - `JWT_KEY` – signing key for JWT tokens.
+   - `JWT_ISSUER` and `JWT_AUDIENCE` – override defaults of `crm.popoff.com` when needed.
+   - `PUBLIC_BASE_URL` – the externally reachable base URL for the API (defaults to `http://localhost:5000`).
+   - `ALLOWED_ORIGINS` – comma-separated CORS origins (defaults to `http://localhost:4173`).
 
 2. Start the full stack (API + SQL Server) from the solution root:
 
