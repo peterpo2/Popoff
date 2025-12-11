@@ -130,6 +130,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+var httpsRedirectionEnabled = builder.Configuration.GetValue("EnableHttpsRedirection", false);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -137,7 +139,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (httpsRedirectionEnabled)
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("FrontendCors");
 app.UseAuthentication();
 app.UseAuthorization();

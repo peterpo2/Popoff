@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopoffCrm.Application.Interfaces;
@@ -30,7 +31,14 @@ public class LogsController : ControllerBase
         }
 
         var tailCount = tail <= 0 ? 200 : tail;
-        var logs = await _dockerService.GetLogs(env, tailCount);
-        return Content(logs, "text/plain");
+        try
+        {
+            var logs = await _dockerService.GetLogs(env, tailCount);
+            return Content(logs, "text/plain");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, $"Unable to read logs: {ex.Message}");
+        }
     }
 }

@@ -96,7 +96,14 @@ public class DockerService : IDockerService
         }
 
         using var process = new Process { StartInfo = psi };
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex)
+        {
+            return $"Failed to start '{fileName} {arguments}': {ex.Message}";
+        }
 
         var outputTask = process.StandardOutput.ReadToEndAsync();
         var errorTask = process.StandardError.ReadToEndAsync();
@@ -117,6 +124,15 @@ public class DockerService : IDockerService
 
         var stdout = await outputTask;
         var stderr = await errorTask;
-        return string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        var combined = string.Join('\n', new[] { stdout, stderr }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+        if (string.IsNullOrWhiteSpace(combined))
+        {
+            return process.ExitCode == 0
+                ? "Command finished without output"
+                : $"Command exited with code {process.ExitCode} without output";
+        }
+
+        return combined;
     }
 }

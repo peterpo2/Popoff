@@ -56,7 +56,7 @@ public class HealthCheckBackgroundService : BackgroundService
         var environments = await dbContext.Environments
             .AsNoTracking()
             .Include(e => e.Server)
-            .Where(e => e.Server.IsActive)
+            .Where(e => e.Server != null && e.Server.IsActive)
             .ToListAsync(cancellationToken);
 
         foreach (var env in environments)
