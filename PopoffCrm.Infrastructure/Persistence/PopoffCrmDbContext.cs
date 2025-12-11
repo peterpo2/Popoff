@@ -81,10 +81,10 @@ public class PopoffCrmDbContext : DbContext
         modelBuilder.Entity<Server>().HasData(new Server
         {
             Id = serverId,
-            Name = "Hetzner-Prod-1",
-            Description = "Hetzner production server",
-            HostName = "Hetzner-Prod-1",
-            IpAddress = "192.168.1.1",
+            Name = "Hetzner-Local-Dev",
+            Description = "Hetzner local development server",
+            HostName = "Hetzner-Local-Dev",
+            IpAddress = "127.0.0.1",
             ConnectionType = "LocalShell",
             ConnectionData = null,
             IsActive = true,
@@ -110,7 +110,8 @@ public class PopoffCrmDbContext : DbContext
                 Name = "Test",
                 Slug = "test",
                 IsProduction = false,
-                ApiUrl = "https://test.latelina.popoff.com/api",
+                FrontendUrl = "http://localhost:3001",
+                ApiUrl = "http://localhost:5000",
                 DockerComposePath = "/opt/latelina-test/docker-compose.yml",
                 DockerProjectName = "latelina-test",
                 GitBranch = "develop",
@@ -124,9 +125,10 @@ public class PopoffCrmDbContext : DbContext
                 Name = "Prod",
                 Slug = "prod",
                 IsProduction = true,
-                ApiUrl = "https://latelina.popoff.com/api",
+                FrontendUrl = "http://localhost:3000",
+                ApiUrl = "http://localhost:5000",
                 DockerComposePath = "/opt/latelina-prod/docker-compose.yml",
-                DockerProjectName = "latelina-prod",
+                DockerProjectName = "latelina",
                 GitBranch = "main",
                 CreatedOn = seedCreatedOn
             });
