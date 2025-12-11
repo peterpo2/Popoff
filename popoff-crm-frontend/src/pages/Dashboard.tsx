@@ -19,7 +19,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-12">
-      <Card className="bg-gradient-to-r from-white/5 to-white/0 border-white/5">
+      <Card className="bg-gradient-to-r from-card/80 to-card/40 border-border/70">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <p className="text-primary">Welcome back, Popoff</p>
@@ -27,9 +27,9 @@ export const Dashboard: React.FC = () => {
           </div>
           {stats && (
             <div className="flex gap-3">
-              <div className="rounded-full bg-white/5 px-4 py-2 text-sm text-primary">Projects: {stats.totalProjects}</div>
-              <div className="rounded-full bg-white/5 px-4 py-2 text-sm text-primary">Envs: {stats.totalEnvironments}</div>
-              <div className="rounded-full bg-white/5 px-4 py-2 text-sm text-primary">Servers: {stats.totalServers}</div>
+              <div className="rounded-full bg-card/70 border border-border/70 px-4 py-2 text-sm text-primary">Projects: {stats.totalProjects}</div>
+              <div className="rounded-full bg-card/70 border border-border/70 px-4 py-2 text-sm text-primary">Envs: {stats.totalEnvironments}</div>
+              <div className="rounded-full bg-card/70 border border-border/70 px-4 py-2 text-sm text-primary">Servers: {stats.totalServers}</div>
             </div>
           )}
         </div>
@@ -52,7 +52,7 @@ export const Dashboard: React.FC = () => {
             {envMatrix.map((env) => (
               <div
                 key={env.id}
-                className="flex items-center justify-between rounded-xl border border-white/5 bg-white/5 px-4 py-3"
+                className="flex items-center justify-between rounded-xl border border-border/60 bg-card/70 px-4 py-3"
               >
                 <div>
                   <div className="font-semibold text-text">{env.projectName} – {env.name}</div>
@@ -69,9 +69,9 @@ export const Dashboard: React.FC = () => {
             <h3 className="text-lg font-semibold">Recent Deployments</h3>
             <span className="text-primary text-sm">last updates</span>
           </div>
-          <div className="overflow-hidden rounded-xl border border-white/5">
+          <div className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
             <table className="w-full text-sm">
-              <thead className="bg-white/5 text-primary">
+              <thead className="bg-card/80 text-primary">
                 <tr>
                   <th className="text-left px-4 py-2">Project</th>
                   <th className="text-left px-4 py-2">Environment</th>
@@ -83,7 +83,7 @@ export const Dashboard: React.FC = () => {
                 {deployments.map((d) => {
                   const env = envMatrix.find((e) => e.id === d.environmentId);
                   return (
-                    <tr key={d.id} className="border-t border-white/5 hover:bg-white/5">
+                    <tr key={d.id} className="border-t border-border/60 hover:bg-card/60">
                       <td className="px-4 py-3 text-text">{env?.projectName ?? 'Unknown'}</td>
                       <td className="px-4 py-3 text-primary">{env?.name}</td>
                       <td className="px-4 py-3 text-text">{d.version}</td>

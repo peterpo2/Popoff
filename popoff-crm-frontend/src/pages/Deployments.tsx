@@ -30,7 +30,7 @@ export const Deployments: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      <Card className="border-white/10">
+      <Card className="border-border/70">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="text-xs text-primary">Project</label>
@@ -40,7 +40,7 @@ export const Deployments: React.FC = () => {
                 setSelectedProject(e.target.value);
                 setSelectedEnv('');
               }}
-              className="mt-1 w-full rounded-lg bg-body border border-white/10 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">All projects</option>
               {projects.map((p) => (
@@ -55,7 +55,7 @@ export const Deployments: React.FC = () => {
             <select
               value={selectedEnv}
               onChange={(e) => setSelectedEnv(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-body border border-white/10 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">All environments</option>
               {environments
@@ -72,7 +72,7 @@ export const Deployments: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-body border border-white/10 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">Any status</option>
               {['Pending', 'Running', 'Success', 'Failed'].map((status) => (
@@ -84,7 +84,7 @@ export const Deployments: React.FC = () => {
           </div>
           <div className="flex items-end">
             <button
-              className="w-full rounded-lg bg-accent-2/20 border border-accent-2/50 text-accent-2 py-2 font-semibold hover:shadow-glow"
+              className="w-full rounded-lg bg-accent-2/20 border border-accent-2/40 text-accent-2 py-2 font-semibold hover:shadow-glow hover:bg-accent-2/25"
               onClick={() => {
                 setSelectedEnv('');
                 setSelectedProject('');
@@ -98,9 +98,9 @@ export const Deployments: React.FC = () => {
       </Card>
 
       <Card>
-        <div className="overflow-hidden rounded-xl border border-white/5">
+        <div className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
           <table className="w-full text-sm">
-            <thead className="bg-white/5 text-primary">
+            <thead className="bg-card/80 text-primary">
               <tr>
                 <th className="text-left px-4 py-2">Project</th>
                 <th className="text-left px-4 py-2">Environment</th>
@@ -114,7 +114,7 @@ export const Deployments: React.FC = () => {
               {filtered.map((d) => {
                 const env = environments.find((e) => e.id === d.environmentId);
                 return (
-                  <tr key={d.id} className="border-t border-white/5 hover:bg-white/5">
+                  <tr key={d.id} className="border-t border-border/60 hover:bg-card/60">
                     <td className="px-4 py-3 text-text">{env?.projectName}</td>
                     <td className="px-4 py-3 text-primary">{env?.name}</td>
                     <td className="px-4 py-3"><StatusBadge status={d.status} /></td>

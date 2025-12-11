@@ -7,25 +7,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        body: '#1a1a2e',
-        card: '#252542',
-        primary: '#b8b8d1',
+        body: '#050510',
+        card: '#11111f',
+        primary: '#b3a4ff',
         accent: {
-          1: '#e8a87c',
-          2: '#7ec8c8',
-          3: '#c9a7b0',
+          1: '#ff9f76',
+          2: '#5cd4d4',
+          3: '#b3a4ff',
         },
-        text: '#f0ede5',
+        text: '#f5f3ff',
+        border: '#22223a',
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', '"Fira Code"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
-        glow: '0 0 25px rgba(126, 200, 200, 0.25)',
-        soft: '0 10px 40px rgba(0, 0, 0, 0.4)',
+        glow: '0 0 32px rgba(92, 212, 212, 0.2), 0 0 36px rgba(179, 164, 255, 0.15)',
+        soft: '0 14px 60px rgba(5, 5, 16, 0.65)',
       },
       backgroundImage: {
-        'grid-lines': 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+        'grid-lines':
+          'linear-gradient(rgba(245,243,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,243,255,0.03) 1px, transparent 1px)',
       },
       animation: {
         float: 'float 10s ease-in-out infinite',

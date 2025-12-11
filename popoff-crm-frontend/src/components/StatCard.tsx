@@ -10,7 +10,7 @@ interface StatCardProps {
 export const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => (
   <motion.div
     whileHover={{ rotateX: -1, rotateY: 1 }}
-    className="glass-panel card-glow rounded-2xl border border-white/5 p-5 shadow-soft"
+    className="glass-panel card-glow rounded-2xl border border-border/70 p-5 shadow-soft"
     style={{ transformStyle: 'preserve-3d' }}
   >
     <div className="flex items-center justify-between text-sm text-primary mb-2 uppercase tracking-wide">

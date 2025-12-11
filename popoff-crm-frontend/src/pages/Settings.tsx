@@ -14,7 +14,7 @@ export const Settings: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      <Card className="border-white/10">
+      <Card className="border-border/70">
         <h3 className="text-lg font-semibold mb-3">Profile</h3>
         {user && (
           <div className="flex items-center gap-4">
@@ -30,7 +30,7 @@ export const Settings: React.FC = () => {
         )}
       </Card>
 
-      <Card className="border-white/10 space-y-4">
+      <Card className="border-border/70 space-y-4">
         <h3 className="text-lg font-semibold">Preferences</h3>
         <div className="flex items-center justify-between">
           <div>
@@ -39,7 +39,7 @@ export const Settings: React.FC = () => {
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" className="sr-only" checked={ambient} onChange={() => setAmbient((v) => !v)} />
-            <span className={`w-11 h-6 flex items-center bg-white/10 rounded-full p-1 duration-200 ${ambient ? 'bg-accent-2/50' : ''}`}>
+            <span className={`w-11 h-6 flex items-center bg-border/60 rounded-full p-1 duration-200 ${ambient ? 'bg-accent-2/40' : ''}`}>
               <span
                 className={`bg-text w-4 h-4 rounded-full shadow transform duration-200 ${ambient ? 'translate-x-5' : ''}`}
               />
@@ -53,7 +53,7 @@ export const Settings: React.FC = () => {
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" className="sr-only" checked={cursorTrail} onChange={() => setCursorTrail((v) => !v)} />
-            <span className={`w-11 h-6 flex items-center bg-white/10 rounded-full p-1 duration-200 ${cursorTrail ? 'bg-accent-1/50' : ''}`}>
+            <span className={`w-11 h-6 flex items-center bg-border/60 rounded-full p-1 duration-200 ${cursorTrail ? 'bg-accent-1/40' : ''}`}>
               <span
                 className={`bg-text w-4 h-4 rounded-full shadow transform duration-200 ${cursorTrail ? 'translate-x-5' : ''}`}
               />

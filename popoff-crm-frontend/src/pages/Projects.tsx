@@ -20,7 +20,7 @@ export const Projects: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects.map((project) => (
-            <Card key={project.id} className="border-white/10">
+            <Card key={project.id} className="border-border/70">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-primary">{project.code}</div>

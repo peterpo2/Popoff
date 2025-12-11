@@ -34,7 +34,7 @@ export const Logs: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      <Card className="border-white/10">
+      <Card className="border-border/70">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <label className="text-xs text-primary">Project</label>
@@ -44,7 +44,7 @@ export const Logs: React.FC = () => {
                 setSelectedProject(e.target.value);
                 setSelectedEnv('');
               }}
-              className="mt-1 w-full rounded-lg bg-body border border-white/10 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">All</option>
               {projects.map((p) => (
@@ -59,7 +59,7 @@ export const Logs: React.FC = () => {
             <select
               value={selectedEnv}
               onChange={(e) => setSelectedEnv(e.target.value)}
-              className="mt-1 w-full rounded-lg bg-body border border-white/10 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg bg-card/70 border border-border/70 px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <option value="">All</option>
               {envMatrix
@@ -73,7 +73,7 @@ export const Logs: React.FC = () => {
           </div>
           <div className="flex items-end">
             <button
-              className="rounded-lg bg-accent-2/20 border border-accent-2/50 text-accent-2 px-4 py-2 font-semibold hover:shadow-glow"
+              className="rounded-lg bg-accent-2/20 border border-accent-2/40 text-accent-2 px-4 py-2 font-semibold hover:shadow-glow hover:bg-accent-2/25"
               onClick={() => apiClient.getLogs().then(setLogs)}
             >
               Refresh
@@ -83,11 +83,11 @@ export const Logs: React.FC = () => {
       </Card>
 
       <Card>
-        <div className="h-[480px] overflow-auto rounded-xl border border-white/5 bg-black/40 p-4 font-mono text-sm">
+        <div className="h-[480px] overflow-auto rounded-xl border border-border/70 bg-card/80 p-4 font-mono text-sm">
           {filteredLogs.map((log) => {
             const env = envMatrix.find((e) => e.id === log.environmentId);
             return (
-              <div key={log.id} className="flex gap-3 py-1 border-b border-white/5 last:border-none">
+              <div key={log.id} className="flex gap-3 py-1 border-b border-border/60 last:border-none">
                 <span className="text-primary text-xs w-40">
                   {new Date(log.timestamp).toLocaleTimeString()}
                 </span>

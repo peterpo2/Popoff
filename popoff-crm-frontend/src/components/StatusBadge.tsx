@@ -16,6 +16,6 @@ const statusStyles: Record<string, string> = {
 };
 
 export const StatusBadge: React.FC<Props> = ({ status }) => {
-  const style = statusStyles[status] ?? 'bg-card text-text border border-white/10';
+  const style = statusStyles[status] ?? 'bg-card text-text border border-border/70';
   return <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${style}`}>{status}</span>;
 };

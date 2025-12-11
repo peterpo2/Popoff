@@ -21,7 +21,7 @@ export const Health: React.FC = () => {
           {health.map((item) => {
             const env = envMatrix.find((e) => e.id === item.environmentId);
             return (
-              <Card key={`${item.environmentId}-${item.checkedOn}`} className="border-white/10">
+              <Card key={`${item.environmentId}-${item.checkedOn}`} className="border-border/70">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-primary">{env?.projectName ?? item.projectName}</div>
@@ -41,7 +41,7 @@ export const Health: React.FC = () => {
         <h3 className="text-lg font-semibold mb-4">Health History (mock)</h3>
         <div className="space-y-3">
           {envMatrix.slice(0, 3).map((env) => (
-            <div key={env.id} className="rounded-xl border border-white/5 bg-white/5 px-4 py-3">
+            <div key={env.id} className="rounded-xl border border-border/60 bg-card/70 px-4 py-3">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-primary">{env.projectName}</div>

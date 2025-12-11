@@ -36,7 +36,7 @@ export const ServerDetails: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {environments.map((env) => (
-            <Card key={env.id} className="border-white/10">
+            <Card key={env.id} className="border-border/70">
               <div className="text-sm text-primary">{env.projectName}</div>
               <h4 className="text-xl font-semibold text-text">{env.name}</h4>
               <p className="text-primary text-sm">URL: {env.frontendUrl}</p>

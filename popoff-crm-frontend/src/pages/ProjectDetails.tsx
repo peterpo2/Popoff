@@ -25,7 +25,7 @@ export const ProjectDetails: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      <Card className="border-white/10">
+      <Card className="border-border/70">
         <div className="flex flex-col gap-2">
           <div className="text-sm text-primary">{project.code}</div>
           <h2 className="text-2xl font-semibold text-text">{project.name}</h2>
@@ -50,7 +50,7 @@ export const ProjectDetails: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {environments.map((env) => (
-            <Card key={env.id} className="border-white/10">
+            <Card key={env.id} className="border-border/70">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-primary uppercase">{env.slug}</div>
@@ -79,9 +79,9 @@ export const ProjectDetails: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Recent Deployments</h3>
         </div>
-        <div className="overflow-hidden rounded-xl border border-white/5">
+        <div className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
           <table className="w-full text-sm">
-            <thead className="bg-white/5 text-primary">
+            <thead className="bg-card/80 text-primary">
               <tr>
                 <th className="text-left px-4 py-2">Environment</th>
                 <th className="text-left px-4 py-2">Version</th>
@@ -93,7 +93,7 @@ export const ProjectDetails: React.FC = () => {
               {deployments.map((d) => {
                 const env = environments.find((e) => e.id === d.environmentId);
                 return (
-                  <tr key={d.id} className="border-t border-white/5 hover:bg-white/5">
+                  <tr key={d.id} className="border-t border-border/60 hover:bg-card/60">
                     <td className="px-4 py-3 text-text">{env?.name}</td>
                     <td className="px-4 py-3 text-primary">{d.version}</td>
                     <td className="px-4 py-3"><StatusBadge status={d.status} /></td>

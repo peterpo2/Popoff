@@ -20,7 +20,7 @@ export const Servers: React.FC = () => {
         </div>
         <div className="space-y-3">
           {servers.map((server) => (
-            <Card key={server.id} className="border-white/10">
+            <Card key={server.id} className="border-border/70">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-xl font-semibold text-text">{server.name}</h4>

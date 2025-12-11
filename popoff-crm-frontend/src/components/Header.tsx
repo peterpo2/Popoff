@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, user }) => {
       {user && (
         <motion.div
           whileHover={{ y: -2 }}
-          className="flex items-center gap-3 rounded-full bg-white/5 px-4 py-2 border border-white/10"
+          className="flex items-center gap-3 rounded-full bg-card/70 px-4 py-2 border border-border/70 shadow-soft/50"
         >
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent-2 to-primary flex items-center justify-center text-body font-semibold">
             {user.displayName.charAt(0)}

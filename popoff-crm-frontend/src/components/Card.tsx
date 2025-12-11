@@ -10,7 +10,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '' }) => (
   <motion.div
     whileHover={{ y: -2 }}
     whileTap={{ y: 0 }}
-    className={`glass-panel card-glow rounded-2xl border border-white/5 p-5 transition duration-200 ${className}`}
+    className={`glass-panel card-glow rounded-2xl border border-border/70 p-5 transition duration-200 ${className}`}
   >
     {children}
   </motion.div>
