@@ -10,7 +10,15 @@ public static class MappingExtensions
 
     public static ProjectDto ToDto(this Project project) => new(project.Id, project.Name, project.Code, project.Description, project.RepositoryUrl);
 
-    public static ServerDto ToDto(this Server server) => new(server.Id, server.Name, server.IpAddress, server.HostName, server.IsActive, server.ConnectionType, server.Description);
+    public static ServerDto ToDto(this Server server) => new(
+        server.Id,
+        server.Name,
+        server.IpAddress,
+        server.HostName,
+        server.IsActive,
+        server.ConnectionType,
+        server.ConnectionData,
+        server.Description);
 
     public static EnvironmentDto ToDto(this EnvironmentEntity env) => new(
         env.Id,
