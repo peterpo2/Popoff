@@ -29,8 +29,8 @@ public class LogsController : ControllerBase
             return NotFound();
         }
 
-        var projectName = env.DockerProjectName ?? env.Slug;
-        var logs = await _dockerService.GetLogs(projectName, tail);
-        return Ok(logs);
+        var tailCount = tail <= 0 ? 200 : tail;
+        var logs = await _dockerService.GetLogs(env, tailCount);
+        return Content(logs, "text/plain");
     }
 }

@@ -64,7 +64,7 @@ public class DeploymentController : ControllerBase
             EnvironmentId = env.Id,
             RequestedByUserId = userId,
             StartedAt = DateTime.UtcNow,
-            Status = DeploymentStatus.Running,
+            Status = DeploymentStatus.Pending,
             Branch = env.GitBranch,
             TriggerType = "Manual"
         };
@@ -72,10 +72,14 @@ public class DeploymentController : ControllerBase
         _dbContext.Deployments.Add(deployment);
         await _dbContext.SaveChangesAsync();
 
+        deployment.Status = DeploymentStatus.Running;
+        _dbContext.Deployments.Update(deployment);
+        await _dbContext.SaveChangesAsync();
+
         var result = await _dockerService.DeployEnvironmentAsync(env);
         deployment.Status = result.Success ? DeploymentStatus.Success : DeploymentStatus.Failed;
         deployment.FinishedAt = DateTime.UtcNow;
-        deployment.LogExcerpt = result.Logs;
+        deployment.LogExcerpt = result.Logs ?? result.Message;
         _dbContext.Deployments.Update(deployment);
         await _dbContext.SaveChangesAsync();
 
