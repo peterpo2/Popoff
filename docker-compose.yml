@@ -24,5 +24,14 @@ services:
     ports:
       - "5000:8080"
 
+  frontend:
+    build:
+      context: ./popoff-crm-frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "4173:80"
+
 volumes:
   popoffcrm_db:
