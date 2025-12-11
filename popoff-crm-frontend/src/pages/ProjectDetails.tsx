@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { Deployment, Environment, Project } from '../types';
 
 export const ProjectDetails: React.FC = () => {
@@ -13,9 +13,9 @@ export const ProjectDetails: React.FC = () => {
 
   useEffect(() => {
     if (projectId) {
-      mockClient.getProject(projectId).then(setProject);
-      mockClient.getEnvironmentsByProject(projectId).then(setEnvironments);
-      mockClient.getDeployments({ projectId }).then(setDeployments);
+      apiClient.getProject(projectId).then(setProject);
+      apiClient.getEnvironmentsByProject(projectId).then(setEnvironments);
+      apiClient.getDeployments({ projectId }).then(setDeployments);
     }
   }, [projectId]);
 

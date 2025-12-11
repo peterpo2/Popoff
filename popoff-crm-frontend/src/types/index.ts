@@ -1,73 +1,100 @@
-export interface AuditedEntity {
-  id: string; // GUID
-  createdOn: string; // ISO string
-  updatedOn: string | null;
-  isDeleted: boolean;
-}
-
-export interface Server extends AuditedEntity {
-  name: string;
-  description?: string;
-  hostName?: string;
-  ipAddress: string;
-  connectionType: 'LocalShell' | 'RemoteAgent';
-  connectionData?: string; // JSON or string placeholder
-  isActive: boolean;
-}
-
-export interface Project extends AuditedEntity {
-  name: string;
-  code: string;
-  description?: string;
-  repositoryUrl?: string;
-}
-
-export interface Environment extends AuditedEntity {
-  projectId: string;
-  serverId: string;
-  name: string; // "Prod" / "Test" / "Staging"
-  slug: string; // "prod" / "test"
-  isProduction: boolean;
-  frontendUrl?: string;
-  apiUrl?: string;
-  dockerComposePath?: string;
-  dockerProjectName?: string;
-  gitBranch?: string;
-}
-
 export type DeploymentStatus = 'Pending' | 'Running' | 'Success' | 'Failed';
 
-export interface Deployment extends AuditedEntity {
+export type HealthStatus = 'Healthy' | 'Degraded' | 'Down';
+
+export interface User {
+  id: string;
+  email: string;
+  displayName: string;
+  role: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  repositoryUrl?: string | null;
+}
+
+export interface Server {
+  id: string;
+  name: string;
+  ipAddress: string;
+  hostName?: string | null;
+  isActive: boolean;
+  connectionType: string;
+  connectionData?: string | null;
+  description?: string | null;
+}
+
+export interface Environment {
+  id: string;
+  projectId: string;
+  serverId: string;
+  name: string;
+  slug: string;
+  isProduction: boolean;
+  frontendUrl?: string | null;
+  apiUrl?: string | null;
+  dockerComposePath?: string | null;
+  dockerProjectName?: string | null;
+  gitBranch?: string | null;
+  projectName: string;
+  serverName: string;
+  projectCode?: string;
+}
+
+export interface Deployment {
+  id: string;
   environmentId: string;
   requestedByUserId: string;
   startedAt: string;
   finishedAt: string | null;
   status: DeploymentStatus;
-  version?: string;
-  branch?: string;
-  triggerType: 'Manual' | 'Auto';
-  logExcerpt?: string;
+  version?: string | null;
+  branch?: string | null;
+  triggerType: string;
+  logExcerpt?: string | null;
 }
 
-export type HealthStatus = 'Healthy' | 'Degraded' | 'Down';
-
-export interface HealthCheckResult extends AuditedEntity {
+export interface HealthCheckResult {
+  id: string;
   environmentId: string;
   status: HealthStatus;
   checkedOn: string;
-  responseTimeMs?: number;
+  responseTimeMs?: number | null;
   statusCode?: number | null;
   message?: string | null;
 }
 
-export interface User extends AuditedEntity {
-  email: string;
-  displayName: string;
-  role: 'Admin';
+export interface HealthOverview {
+  environmentId: string;
+  projectId: string;
+  projectName: string;
+  environmentName: string;
+  status: HealthStatus;
+  checkedOn: string;
+  responseTimeMs?: number | null;
+  statusCode?: number | null;
+  message?: string | null;
 }
 
-export interface EnvironmentWithProject extends Environment {
-  projectName: string;
-  projectCode: string;
-  serverName?: string;
+export type EnvironmentWithProject = Environment;
+
+export interface DashboardStats {
+  totalProjects: number;
+  totalEnvironments: number;
+  totalServers: number;
+  activeDeployments: number;
+}
+
+export type LogLevel = 'INFO' | 'WARNING' | 'ERROR';
+
+export interface LogEntry {
+  id: string;
+  environmentId: string;
+  level: LogLevel;
+  message: string;
+  timestamp: string;
 }

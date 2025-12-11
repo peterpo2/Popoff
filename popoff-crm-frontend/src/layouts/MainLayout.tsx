@@ -5,7 +5,7 @@ import { Sidebar } from '../components/Sidebar';
 import { Header } from '../components/Header';
 import { BackgroundEffects } from '../components/BackgroundEffects';
 import { CursorGlow } from '../components/CursorGlow';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { User } from '../types';
 
 export const MainLayout: React.FC = () => {
@@ -13,7 +13,7 @@ export const MainLayout: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    mockClient.getUser().then(setUser);
+    apiClient.getUser().then(setUser);
   }, []);
 
   const titles: Record<string, string> = {

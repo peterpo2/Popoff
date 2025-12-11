@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '../components/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { Deployment, EnvironmentWithProject, Project } from '../types';
 
 export const Deployments: React.FC = () => {
@@ -13,9 +13,9 @@ export const Deployments: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   useEffect(() => {
-    mockClient.getDeployments().then(setDeployments);
-    mockClient.getProjects().then(setProjects);
-    mockClient.getEnvironmentMatrix().then((matrix) => setEnvironments(matrix));
+    apiClient.getDeployments().then(setDeployments);
+    apiClient.getProjects().then(setProjects);
+    apiClient.getEnvironmentMatrix().then((matrix) => setEnvironments(matrix));
   }, []);
 
   const filtered = useMemo(() => {

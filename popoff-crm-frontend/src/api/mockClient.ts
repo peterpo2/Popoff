@@ -1,30 +1,21 @@
-import { Deployment, Environment, EnvironmentWithProject, HealthCheckResult, Project, Server, User } from '../types';
-
-type LogLevel = 'INFO' | 'WARNING' | 'ERROR';
-
-export interface LogEntry {
-  id: string;
-  environmentId: string;
-  level: LogLevel;
-  message: string;
-  timestamp: string;
-}
-
-export interface DashboardStats {
-  totalProjects: number;
-  totalEnvironments: number;
-  totalServers: number;
-  activeDeployments: number;
-}
+import {
+  DashboardStats,
+  Deployment,
+  Environment,
+  EnvironmentWithProject,
+  HealthCheckResult,
+  LogEntry,
+  LogLevel,
+  Project,
+  Server,
+  User,
+} from '../types';
 
 const user: User = {
   id: '11111111-1111-1111-1111-111111111111',
   displayName: 'Petar Popov',
   email: 'petar@crm.popoff.com',
   role: 'Admin',
-  createdOn: '2024-12-01T10:00:00Z',
-  updatedOn: null,
-  isDeleted: false,
 };
 
 const servers: Server[] = [
@@ -37,9 +28,6 @@ const servers: Server[] = [
     connectionType: 'LocalShell',
     connectionData: '{}',
     isActive: true,
-    createdOn: '2024-12-01T10:00:00Z',
-    updatedOn: '2024-12-10T12:00:00Z',
-    isDeleted: false,
   },
   {
     id: '7f08bfc4-9585-4a1c-8ae2-20812a534002',
@@ -50,9 +38,6 @@ const servers: Server[] = [
     connectionType: 'LocalShell',
     connectionData: '{}',
     isActive: true,
-    createdOn: '2024-12-01T10:00:00Z',
-    updatedOn: '2024-12-08T14:00:00Z',
-    isDeleted: false,
   },
 ];
 
@@ -63,9 +48,6 @@ const projects: Project[] = [
     code: 'LAT',
     description: 'E-commerce storefront for artisan pasta',
     repositoryUrl: 'https://github.com/popoff/latelina',
-    createdOn: '2024-12-01T10:00:00Z',
-    updatedOn: '2024-12-12T10:00:00Z',
-    isDeleted: false,
   },
   {
     id: 'bdd9e0c4-d7ad-47b2-9a63-9f7d57a3a200',
@@ -73,9 +55,6 @@ const projects: Project[] = [
     code: 'SIG',
     description: 'Real-time status monitor for microservices',
     repositoryUrl: 'https://github.com/popoff/signalq',
-    createdOn: '2024-12-03T09:00:00Z',
-    updatedOn: '2024-12-11T15:00:00Z',
-    isDeleted: false,
   },
 ];
 
@@ -92,9 +71,9 @@ const environments: Environment[] = [
     dockerComposePath: '/srv/latelina/prod/docker-compose.yml',
     dockerProjectName: 'latelina-prod',
     gitBranch: 'main',
-    createdOn: '2024-12-01T10:00:00Z',
-    updatedOn: '2024-12-12T09:00:00Z',
-    isDeleted: false,
+    projectName: projects[0].name,
+    projectCode: projects[0].code,
+    serverName: servers[0].name,
   },
   {
     id: 'f2a3e17b-44f9-45b0-8571-6d5ed5a30502',
@@ -108,9 +87,9 @@ const environments: Environment[] = [
     dockerComposePath: '/srv/latelina/test/docker-compose.yml',
     dockerProjectName: 'latelina-test',
     gitBranch: 'develop',
-    createdOn: '2024-12-02T10:00:00Z',
-    updatedOn: '2024-12-12T08:00:00Z',
-    isDeleted: false,
+    projectName: projects[0].name,
+    projectCode: projects[0].code,
+    serverName: servers[1].name,
   },
   {
     id: 'd1e84a03-1a52-4db3-b929-a92bb8c90603',
@@ -124,9 +103,9 @@ const environments: Environment[] = [
     dockerComposePath: '/srv/signalq/prod/docker-compose.yml',
     dockerProjectName: 'signalq-prod',
     gitBranch: 'main',
-    createdOn: '2024-12-05T10:00:00Z',
-    updatedOn: '2024-12-10T08:00:00Z',
-    isDeleted: false,
+    projectName: projects[1].name,
+    projectCode: projects[1].code,
+    serverName: servers[0].name,
   },
   {
     id: '87fc5b4e-0bfb-430c-9e6c-e8610f1b0404',
@@ -140,9 +119,9 @@ const environments: Environment[] = [
     dockerComposePath: '/srv/signalq/test/docker-compose.yml',
     dockerProjectName: 'signalq-test',
     gitBranch: 'develop',
-    createdOn: '2024-12-05T10:00:00Z',
-    updatedOn: '2024-12-10T08:00:00Z',
-    isDeleted: false,
+    projectName: projects[1].name,
+    projectCode: projects[1].code,
+    serverName: servers[1].name,
   },
 ];
 
@@ -158,9 +137,6 @@ const deployments: Deployment[] = [
     branch: 'main',
     triggerType: 'Manual',
     logExcerpt: 'Deployment completed successfully.',
-    createdOn: '2024-12-12T11:00:00Z',
-    updatedOn: '2024-12-12T11:05:00Z',
-    isDeleted: false,
   },
   {
     id: '0f3a81c5-4c8f-4d9e-a508-4298e7f90702',
@@ -173,9 +149,6 @@ const deployments: Deployment[] = [
     branch: 'develop',
     triggerType: 'Manual',
     logExcerpt: 'Smoke tests passed.',
-    createdOn: '2024-12-12T09:00:00Z',
-    updatedOn: '2024-12-12T09:04:00Z',
-    isDeleted: false,
   },
   {
     id: 'c6cc1269-dc92-4c23-af4d-d8d0bcf50703',
@@ -188,9 +161,6 @@ const deployments: Deployment[] = [
     branch: 'main',
     triggerType: 'Auto',
     logExcerpt: 'Container healthcheck failed after deploy.',
-    createdOn: '2024-12-11T18:00:00Z',
-    updatedOn: '2024-12-11T18:07:00Z',
-    isDeleted: false,
   },
   {
     id: 'e95e9ee3-1c02-4e46-bf90-6a8c3acf0704',
@@ -203,9 +173,6 @@ const deployments: Deployment[] = [
     branch: 'develop',
     triggerType: 'Manual',
     logExcerpt: 'Rolling update in progress...',
-    createdOn: '2024-12-12T06:30:00Z',
-    updatedOn: '2024-12-12T06:45:00Z',
-    isDeleted: false,
   },
 ];
 
@@ -218,9 +185,6 @@ const healthChecks: HealthCheckResult[] = [
     responseTimeMs: 120,
     statusCode: 200,
     message: 'All systems nominal',
-    createdOn: '2024-12-12T10:50:00Z',
-    updatedOn: null,
-    isDeleted: false,
   },
   {
     id: 'bdb4d2a1-4f24-40a2-9af3-81f965c20802',
@@ -230,9 +194,6 @@ const healthChecks: HealthCheckResult[] = [
     responseTimeMs: 480,
     statusCode: 200,
     message: 'Elevated latency on checkout API',
-    createdOn: '2024-12-12T10:40:00Z',
-    updatedOn: null,
-    isDeleted: false,
   },
   {
     id: '3cb4bb27-7d36-4389-9d63-09da8a2c0803',
@@ -242,9 +203,6 @@ const healthChecks: HealthCheckResult[] = [
     responseTimeMs: undefined,
     statusCode: 503,
     message: 'Database connection refused',
-    createdOn: '2024-12-12T10:30:00Z',
-    updatedOn: null,
-    isDeleted: false,
   },
   {
     id: 'd7b70bb1-7b0f-4066-9dd4-4c2bf1d50804',
@@ -254,9 +212,6 @@ const healthChecks: HealthCheckResult[] = [
     responseTimeMs: 160,
     statusCode: 200,
     message: 'Stable response times',
-    createdOn: '2024-12-12T10:20:00Z',
-    updatedOn: null,
-    isDeleted: false,
   },
 ];
 
@@ -342,7 +297,7 @@ export const mockClient = {
         ...env,
         projectName: project.name,
         projectCode: project.code,
-        serverName: server?.name,
+        serverName: server?.name ?? 'Unknown server',
       };
     });
   },

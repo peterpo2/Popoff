@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '../components/Card';
-import { mockClient, LogEntry } from '../api/mockClient';
+import { apiClient } from '../api/client';
+import { LogEntry } from '../types';
 import { EnvironmentWithProject, Project } from '../types';
 
 const levelColors: Record<string, string> = {
@@ -17,9 +18,9 @@ export const Logs: React.FC = () => {
   const [selectedEnv, setSelectedEnv] = useState('');
 
   useEffect(() => {
-    mockClient.getProjects().then(setProjects);
-    mockClient.getEnvironmentMatrix().then(setEnvMatrix);
-    mockClient.getLogs().then(setLogs);
+    apiClient.getProjects().then(setProjects);
+    apiClient.getEnvironmentMatrix().then(setEnvMatrix);
+    apiClient.getLogs().then(setLogs);
   }, []);
 
   const filteredLogs = useMemo(() => {
@@ -73,7 +74,7 @@ export const Logs: React.FC = () => {
           <div className="flex items-end">
             <button
               className="rounded-lg bg-accent-2/20 border border-accent-2/50 text-accent-2 px-4 py-2 font-semibold hover:shadow-glow"
-              onClick={() => mockClient.getLogs().then(setLogs)}
+              onClick={() => apiClient.getLogs().then(setLogs)}
             >
               Refresh
             </button>

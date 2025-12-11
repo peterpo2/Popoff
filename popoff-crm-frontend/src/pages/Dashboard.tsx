@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import { StatCard } from '../components/StatCard';
 import { StatusBadge } from '../components/StatusBadge';
-import { mockClient, DashboardStats } from '../api/mockClient';
+import { apiClient } from '../api/client';
+import { DashboardStats } from '../types';
 import { Deployment, EnvironmentWithProject } from '../types';
 
 export const Dashboard: React.FC = () => {
@@ -11,9 +12,9 @@ export const Dashboard: React.FC = () => {
   const [envMatrix, setEnvMatrix] = useState<EnvironmentWithProject[]>([]);
 
   useEffect(() => {
-    mockClient.getDashboardStats().then(setStats);
-    mockClient.getDeployments().then((data) => setDeployments(data.slice(0, 6)));
-    mockClient.getEnvironmentMatrix().then(setEnvMatrix);
+    apiClient.getDashboardStats().then(setStats);
+    apiClient.getDeployments().then((data) => setDeployments(data.slice(0, 6)));
+    apiClient.getEnvironmentMatrix().then(setEnvMatrix);
   }, []);
 
   return (

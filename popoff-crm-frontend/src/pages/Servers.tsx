@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/Card';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { Server } from '../types';
 
 export const Servers: React.FC = () => {
   const [servers, setServers] = useState<Server[]>([]);
 
   useEffect(() => {
-    mockClient.getServers().then(setServers);
+    apiClient.getServers().then(setServers);
   }, []);
 
   return (

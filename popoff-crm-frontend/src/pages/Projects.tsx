@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/Card';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { Project } from '../types';
 
 export const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    mockClient.getProjects().then(setProjects);
+    apiClient.getProjects().then(setProjects);
   }, []);
 
   return (

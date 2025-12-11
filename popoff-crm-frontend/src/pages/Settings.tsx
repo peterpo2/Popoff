@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { User } from '../types';
 
 export const Settings: React.FC = () => {
@@ -9,7 +9,7 @@ export const Settings: React.FC = () => {
   const [cursorTrail, setCursorTrail] = useState(true);
 
   useEffect(() => {
-    mockClient.getUser().then(setUser);
+    apiClient.getUser().then(setUser);
   }, []);
 
   return (

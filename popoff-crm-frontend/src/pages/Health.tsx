@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { mockClient } from '../api/mockClient';
-import { EnvironmentWithProject, HealthCheckResult } from '../types';
+import { apiClient } from '../api/client';
+import { EnvironmentWithProject, HealthOverview } from '../types';
 
 export const Health: React.FC = () => {
-  const [health, setHealth] = useState<HealthCheckResult[]>([]);
+  const [health, setHealth] = useState<HealthOverview[]>([]);
   const [envMatrix, setEnvMatrix] = useState<EnvironmentWithProject[]>([]);
 
   useEffect(() => {
-    mockClient.getHealth().then(setHealth);
-    mockClient.getEnvironmentMatrix().then(setEnvMatrix);
+    apiClient.getHealthOverview().then(setHealth);
+    apiClient.getEnvironmentMatrix().then(setEnvMatrix);
   }, []);
 
   return (
@@ -21,11 +21,11 @@ export const Health: React.FC = () => {
           {health.map((item) => {
             const env = envMatrix.find((e) => e.id === item.environmentId);
             return (
-              <Card key={item.id} className="border-white/10">
+              <Card key={`${item.environmentId}-${item.checkedOn}`} className="border-white/10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm text-primary">{env?.projectName}</div>
-                    <h4 className="text-xl font-semibold text-text">{env?.name}</h4>
+                    <div className="text-sm text-primary">{env?.projectName ?? item.projectName}</div>
+                    <h4 className="text-xl font-semibold text-text">{env?.name ?? item.environmentName}</h4>
                     <p className="text-primary text-sm">Latency: {item.responseTimeMs ?? '—'} ms</p>
                     <p className="text-primary text-xs">Last check: {new Date(item.checkedOn).toLocaleTimeString()}</p>
                   </div>

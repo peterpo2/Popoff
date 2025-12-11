@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card } from '../components/Card';
-import { mockClient } from '../api/mockClient';
+import { apiClient } from '../api/client';
 import { EnvironmentWithProject, Server } from '../types';
 
 export const ServerDetails: React.FC = () => {
@@ -11,8 +11,8 @@ export const ServerDetails: React.FC = () => {
 
   useEffect(() => {
     if (serverId) {
-      mockClient.getServer(serverId).then(setServer);
-      mockClient.getEnvironmentMatrix().then((matrix) => {
+      apiClient.getServer(serverId).then(setServer);
+      apiClient.getEnvironmentMatrix().then((matrix) => {
         setEnvironments(matrix.filter((env) => env.serverId === serverId));
       });
     }
