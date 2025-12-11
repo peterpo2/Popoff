@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PopoffCrm.WebApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0cee69166b98d34d040fb4897972adc9ae9911da")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31bf226ef9e935506e202b9ad155977a04ff1554")]
 [assembly: System.Reflection.AssemblyProductAttribute("PopoffCrm.WebApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PopoffCrm.WebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
