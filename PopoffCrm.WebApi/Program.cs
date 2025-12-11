@@ -11,7 +11,30 @@ builder.Services.AddControllers();
 // Bind settings from configuration/environment variables (see docker-compose and .env.example)
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.Configure<AppUrlsSettings>(builder.Configuration.GetSection(AppUrlsSettings.SectionName));
-builder.Services.Configure<GoogleAuthSettings>(builder.Configuration.GetSection(GoogleAuthSettings.SectionName));
+
+builder.Services.AddOptions<GoogleAuthSettings>()
+    .Bind(builder.Configuration.GetSection(GoogleAuthSettings.SectionName))
+    .PostConfigure(options =>
+    {
+        var clientId = builder.Configuration["GOOGLE_CLIENT_ID"];
+        var clientSecret = builder.Configuration["GOOGLE_CLIENT_SECRET"];
+        var allowedDomain = builder.Configuration["GOOGLE_ALLOWED_DOMAIN"];
+
+        if (!string.IsNullOrWhiteSpace(clientId))
+        {
+            options.ClientId = clientId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(clientSecret))
+        {
+            options.ClientSecret = clientSecret;
+        }
+
+        if (!string.IsNullOrWhiteSpace(allowedDomain))
+        {
+            options.AllowedDomain = allowedDomain;
+        }
+    });
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -46,6 +69,21 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
+
+// Example of how Google OAuth could be enabled in the future without altering the
+// existing JWT setup:
+// builder.Services.AddAuthentication(options =>
+// {
+//     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+// })
+// .AddJwtBearer()
+// .AddGoogle(options =>
+// {
+//     var googleOptions = builder.Configuration.GetSection(GoogleAuthSettings.SectionName).Get<GoogleAuthSettings>() ?? new();
+//     options.ClientId = googleOptions.ClientId;
+//     options.ClientSecret = googleOptions.ClientSecret;
+// });
 
 builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
     .Configure<IOptions<JwtSettings>>((options, jwtOptions) =>
