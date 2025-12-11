@@ -65,7 +65,8 @@ public class PopoffCrmDbContext : DbContext
         var envTestId = Guid.Parse("b4fa7483-59ae-4d0f-8ebd-0d0a0c6a1b44");
         var envProdId = Guid.Parse("832a84f0-5d6d-4f1b-8d96-7716b7a6c1a0");
 
-        var adminHash = "10000.00112233445566778899AABBCCDDEEFF.2E3A9A9EE2B5731B504C3DF1F82B07E701E5FF0BF103C636F74FAA111111B049";
+        var seedCreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var adminHash = "10000.D73617EBFC538BD6ED61FB63D075601C.3E92952FDA90A4D3BB7CCB80A6D38DDB17AEA347E520408CF8A4B4CF9D892457";
 
         modelBuilder.Entity<User>().HasData(new User
         {
@@ -74,7 +75,7 @@ public class PopoffCrmDbContext : DbContext
             DisplayName = "Petar Popov",
             PasswordHash = adminHash,
             Role = "Admin",
-            CreatedOn = DateTime.UtcNow
+            CreatedOn = seedCreatedOn
         });
 
         modelBuilder.Entity<Server>().HasData(new Server
@@ -87,7 +88,7 @@ public class PopoffCrmDbContext : DbContext
             ConnectionType = "LocalShell",
             ConnectionData = null,
             IsActive = true,
-            CreatedOn = DateTime.UtcNow
+            CreatedOn = seedCreatedOn
         });
 
         modelBuilder.Entity<Project>().HasData(new Project
@@ -97,7 +98,7 @@ public class PopoffCrmDbContext : DbContext
             Code = "LTLNA",
             Description = "Latelina project",
             RepositoryUrl = null,
-            CreatedOn = DateTime.UtcNow
+            CreatedOn = seedCreatedOn
         });
 
         modelBuilder.Entity<EnvironmentEntity>().HasData(
@@ -113,7 +114,7 @@ public class PopoffCrmDbContext : DbContext
                 DockerComposePath = "/opt/latelina-test/docker-compose.yml",
                 DockerProjectName = "latelina-test",
                 GitBranch = "develop",
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = seedCreatedOn
             },
             new EnvironmentEntity
             {
@@ -127,7 +128,7 @@ public class PopoffCrmDbContext : DbContext
                 DockerComposePath = "/opt/latelina-prod/docker-compose.yml",
                 DockerProjectName = "latelina-prod",
                 GitBranch = "main",
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = seedCreatedOn
             });
     }
 

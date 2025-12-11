@@ -138,7 +138,7 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("b4fa7483-59ae-4d0f-8ebd-0d0a0c6a1b44"),
                             ApiUrl = "https://test.latelina.popoff.com/api",
-                            CreatedOn = new DateTime(2025, 12, 11, 16, 32, 15, 632, DateTimeKind.Utc).AddTicks(2745),
+                            CreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                             DockerComposePath = "/opt/latelina-test/docker-compose.yml",
                             DockerProjectName = "latelina-test",
                             GitBranch = "develop",
@@ -153,7 +153,7 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("832a84f0-5d6d-4f1b-8d96-7716b7a6c1a0"),
                             ApiUrl = "https://latelina.popoff.com/api",
-                            CreatedOn = new DateTime(2025, 12, 11, 16, 32, 15, 632, DateTimeKind.Utc).AddTicks(2748),
+                            CreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                             DockerComposePath = "/opt/latelina-prod/docker-compose.yml",
                             DockerProjectName = "latelina-prod",
                             GitBranch = "main",
@@ -247,7 +247,7 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("c0aa483c-f17e-47a1-98dc-8b5e0c9cba10"),
                             Code = "LTLNA",
-                            CreatedOn = new DateTime(2025, 12, 11, 16, 32, 15, 632, DateTimeKind.Utc).AddTicks(2711),
+                            CreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Latelina project",
                             IsDeleted = false,
                             Name = "Latelina"
@@ -302,7 +302,7 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         {
                             Id = new Guid("6f7f8455-43c2-4b61-86a3-a0c24b5c7d77"),
                             ConnectionType = "LocalShell",
-                            CreatedOn = new DateTime(2025, 12, 11, 16, 32, 15, 632, DateTimeKind.Utc).AddTicks(2678),
+                            CreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Hetzner production server",
                             HostName = "Hetzner-Prod-1",
                             IpAddress = "192.168.1.1",
@@ -354,11 +354,11 @@ namespace PopoffCrm.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = new Guid("b4f1bf76-df8a-4b77-9e74-8e5898dd34b8"),
-                            CreatedOn = new DateTime(2025, 12, 11, 16, 32, 15, 632, DateTimeKind.Utc).AddTicks(2446),
+                            CreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                             DisplayName = "Petar Popov",
                             Email = "admin@popoffcrm.com",
                             IsDeleted = false,
-                            PasswordHash = "10000.00112233445566778899AABBCCDDEEFF.2E3A9A9EE2B5731B504C3DF1F82B07E701E5FF0BF103C636F74FAA111111B049",
+                            PasswordHash = "10000.D73617EBFC538BD6ED61FB63D075601C.3E92952FDA90A4D3BB7CCB80A6D38DDB17AEA347E520408CF8A4B4CF9D892457",
                             Role = "Admin"
                         });
                 });
