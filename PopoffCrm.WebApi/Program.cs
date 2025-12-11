@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -35,6 +37,29 @@ builder.Services.AddOptions<GoogleAuthSettings>()
             options.AllowedDomain = allowedDomain;
         }
     });
+
+var appUrlsSettings = builder.Configuration.GetSection(AppUrlsSettings.SectionName).Get<AppUrlsSettings>() ?? new();
+var allowedOrigins = new List<string>(appUrlsSettings.AllowedOrigins
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
+if (allowedOrigins.Count == 0)
+{
+    // Default to the local frontend during development; when the public domain is ready
+    // (e.g., https://crm.popoff.com) add it to AppUrls__AllowedOrigins so the hosted
+    // frontend can call the API via CORS.
+    allowedOrigins.Add("http://localhost:3000");
+}
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigins.ToArray())
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -108,12 +133,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
+app.UseCors("FrontendCors");
 app.UseAuthentication();
 app.UseAuthorization();
 
