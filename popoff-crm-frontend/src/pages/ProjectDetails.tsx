@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { StatusBadge } from '../components/StatusBadge';
 import { apiClient } from '../api/client';
+import { useToast } from '../contexts/ToastContext';
 import { Deployment, Environment, HealthOverview, Project } from '../types';
 
 export const ProjectDetails: React.FC = () => {
@@ -12,7 +13,7 @@ export const ProjectDetails: React.FC = () => {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [healthOverview, setHealthOverview] = useState<HealthOverview[]>([]);
   const [deployingId, setDeployingId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const { showToast } = useToast();
 
   const refreshDeployments = useCallback(() => {
     if (projectId) {
@@ -32,13 +33,6 @@ export const ProjectDetails: React.FC = () => {
       });
     }
   }, [projectId, refreshDeployments]);
-
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
 
   const latestDeploymentByEnv = useMemo(() => {
     const map: Record<string, Deployment | undefined> = {};
@@ -63,10 +57,14 @@ export const ProjectDetails: React.FC = () => {
     try {
       setDeployingId(environmentId);
       await apiClient.deployEnvironment(environmentId);
-      setToast({ type: 'success', message: 'Deployment triggered successfully.' });
+      showToast({ type: 'success', title: 'Deployment', message: 'Deployment triggered successfully.' });
       refreshDeployments();
     } catch (error) {
-      setToast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to trigger deployment.' });
+      showToast({
+        type: 'error',
+        title: 'Deployment',
+        message: error instanceof Error ? error.message : 'Failed to trigger deployment.',
+      });
     } finally {
       setDeployingId(null);
     }
@@ -97,15 +95,6 @@ export const ProjectDetails: React.FC = () => {
       </Card>
 
       <Card>
-        {toast && (
-          <div
-            className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
-              toast.type === 'success' ? 'border-accent-2/50 text-accent-2' : 'border-red-500/50 text-red-300'
-            }`}
-          >
-            {toast.message}
-          </div>
-        )}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Environments</h3>
           <span className="text-primary text-sm">{environments.length} total</span>
@@ -156,8 +145,8 @@ export const ProjectDetails: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Recent Deployments</h3>
         </div>
-        <div className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-border/70 bg-card/60">
+          <table className="min-w-full text-sm">
             <thead className="bg-card/80 text-primary">
               <tr>
                 <th className="text-left px-4 py-2">Environment</th>

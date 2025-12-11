@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card } from '../components/Card';
 import { apiClient } from '../api/client';
+import { useToast } from '../contexts/ToastContext';
 import { EnvironmentWithProject, LogEntry, Project } from '../types';
 
 export const Logs: React.FC = () => {
@@ -11,11 +12,25 @@ export const Logs: React.FC = () => {
   const [selectedEnv, setSelectedEnv] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [metaError, setMetaError] = useState('');
+  const [logsError, setLogsError] = useState('');
+  const { showToast } = useToast();
+
+  const loadMeta = useCallback(async () => {
+    try {
+      const [projectData, envData] = await Promise.all([apiClient.getProjects(), apiClient.getEnvironmentMatrix()]);
+      setProjects(projectData);
+      setEnvMatrix(envData);
+      setMetaError('');
+    } catch (err) {
+      setMetaError('Unable to load projects and environments.');
+      showToast({ type: 'error', title: 'Logs', message: 'Failed to fetch project metadata.' });
+    }
+  }, [showToast]);
 
   useEffect(() => {
-    apiClient.getProjects().then(setProjects);
-    apiClient.getEnvironmentMatrix().then(setEnvMatrix);
-  }, []);
+    loadMeta();
+  }, [loadMeta]);
 
   const filteredEnvironments = useMemo(
     () => envMatrix.filter((env) => !selectedProject || env.projectId === selectedProject),
@@ -38,9 +53,16 @@ export const Logs: React.FC = () => {
 
     const fetchLogs = () => {
       setIsLoading(true);
+      setLogsError('');
       apiClient
         .getLogsByEnvironment(selectedEnv, 200)
-        .then((result) => setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp))))
+        .then((result) => {
+          setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
+        })
+        .catch(() => {
+          setLogsError('Failed to load logs for this environment.');
+          showToast({ type: 'error', title: 'Logs', message: 'Unable to fetch logs right now.' });
+        })
         .finally(() => setIsLoading(false));
     };
 
@@ -50,7 +72,7 @@ export const Logs: React.FC = () => {
 
     const interval = setInterval(fetchLogs, 10000);
     return () => clearInterval(interval);
-  }, [autoRefresh, selectedEnv]);
+  }, [autoRefresh, selectedEnv, showToast]);
 
   const getLineColor = (text: string) => {
     if (/ERROR/i.test(text)) return 'text-red-400';
@@ -64,7 +86,14 @@ export const Logs: React.FC = () => {
     setIsLoading(true);
     apiClient
       .getLogsByEnvironment(selectedEnv, 200)
-      .then((result) => setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp))))
+      .then((result) => {
+        setLogsError('');
+        setLogs(result.sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
+      })
+      .catch(() => {
+        setLogsError('Failed to refresh logs.');
+        showToast({ type: 'error', title: 'Logs', message: 'Refreshing logs failed.' });
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -126,12 +155,35 @@ export const Logs: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {metaError && (
+          <div className="mt-4 flex items-center justify-between rounded-lg border border-border/60 bg-card/60 px-4 py-3 text-sm text-primary">
+            <span>{metaError}</span>
+            <button
+              onClick={loadMeta}
+              className="rounded-lg border border-border/70 px-3 py-1 text-xs font-semibold text-text hover:bg-card"
+            >
+              Retry
+            </button>
+          </div>
+        )}
       </Card>
 
       <Card>
         <div className="h-[480px] overflow-auto rounded-xl border border-border/70 bg-card/80 p-4 font-mono text-sm space-y-2">
           {!selectedEnv && <div className="text-primary">Select an environment to view logs.</div>}
           {selectedEnv && isLoading && <div className="text-primary">Loading logs...</div>}
+          {selectedEnv && logsError && !isLoading && (
+            <div className="flex items-center justify-between rounded-lg border border-border/60 bg-card/60 px-4 py-3 text-sm text-primary">
+              <span>{logsError}</span>
+              <button
+                onClick={handleRefresh}
+                className="rounded-lg border border-border/70 px-3 py-1 text-xs font-semibold text-text hover:bg-card"
+              >
+                Retry
+              </button>
+            </div>
+          )}
           {selectedEnv && !isLoading && logs.length === 0 && <div className="text-primary">No logs found.</div>}
 
           {selectedEnv &&

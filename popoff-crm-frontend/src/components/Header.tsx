@@ -7,14 +7,25 @@ interface HeaderProps {
   subtitle?: string;
   user?: User | null;
   onLogout?: () => void;
+  onMenuToggle?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, subtitle, user, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({ title, subtitle, user, onLogout, onMenuToggle }) => {
   return (
-    <header className="flex items-center justify-between py-6">
-      <div>
-        <h1 className="text-3xl font-semibold text-text text-glow">{title}</h1>
-        {subtitle && <p className="text-primary mt-1">{subtitle}</p>}
+    <header className="flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-start gap-3 md:items-center">
+        {onMenuToggle && (
+          <button
+            onClick={onMenuToggle}
+            className="inline-flex items-center rounded-lg border border-border/70 bg-card/70 px-3 py-2 text-sm text-text shadow-soft/40 transition hover:bg-card md:hidden"
+          >
+            ☰ Menu
+          </button>
+        )}
+        <div>
+          <h1 className="text-3xl font-semibold text-text text-glow">{title}</h1>
+          {subtitle && <p className="text-primary mt-1">{subtitle}</p>}
+        </div>
       </div>
       {user && (
         <div className="flex items-center gap-3">

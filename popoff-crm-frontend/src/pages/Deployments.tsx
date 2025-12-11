@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card } from '../components/Card';
 import { StatusBadge } from '../components/StatusBadge';
 import { apiClient } from '../api/client';
+import { useToast } from '../contexts/ToastContext';
 import { Deployment, EnvironmentWithProject, Project } from '../types';
 
 export const Deployments: React.FC = () => {
@@ -11,12 +12,33 @@ export const Deployments: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [selectedEnv, setSelectedEnv] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { showToast } = useToast();
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [deploymentsData, projectsData, envData] = await Promise.all([
+        apiClient.getDeployments(),
+        apiClient.getProjects(),
+        apiClient.getEnvironmentMatrix(),
+      ]);
+      setDeployments(deploymentsData);
+      setProjects(projectsData);
+      setEnvironments(envData);
+      setError('');
+    } catch (err) {
+      setError('Could not load deployments.');
+      showToast({ type: 'error', title: 'Deployments', message: 'Fetching deployments failed. Please retry.' });
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
 
   useEffect(() => {
-    apiClient.getDeployments().then(setDeployments);
-    apiClient.getProjects().then(setProjects);
-    apiClient.getEnvironmentMatrix().then((matrix) => setEnvironments(matrix));
-  }, []);
+    load();
+  }, [load]);
 
   const filtered = useMemo(() => {
     return deployments.filter((d) => {
@@ -98,35 +120,64 @@ export const Deployments: React.FC = () => {
       </Card>
 
       <Card>
-        <div className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
-          <table className="w-full text-sm">
-            <thead className="bg-card/80 text-primary">
-              <tr>
-                <th className="text-left px-4 py-2">Project</th>
-                <th className="text-left px-4 py-2">Environment</th>
-                <th className="text-left px-4 py-2">Status</th>
-                <th className="text-left px-4 py-2">Version</th>
-                <th className="text-left px-4 py-2">Branch</th>
-                <th className="text-left px-4 py-2">Started</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((d) => {
-                const env = environments.find((e) => e.id === d.environmentId);
-                return (
-                  <tr key={d.id} className="border-t border-border/60 hover:bg-card/60">
-                    <td className="px-4 py-3 text-text">{env?.projectName}</td>
-                    <td className="px-4 py-3 text-primary">{env?.name}</td>
-                    <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
-                    <td className="px-4 py-3 text-text">{d.version}</td>
-                    <td className="px-4 py-3 text-primary">{d.branch}</td>
-                    <td className="px-4 py-3 text-primary">{new Date(d.startedAt).toLocaleString()}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        {loading && <div className="text-primary">Loading deployments...</div>}
+
+        {error && !loading && (
+          <div className="flex items-center justify-between rounded-lg border border-border/60 bg-card/60 px-4 py-3 text-sm text-primary">
+            <span>{error}</span>
+            <button
+              onClick={load}
+              className="rounded-lg border border-border/70 px-3 py-1 text-xs font-semibold text-text hover:bg-card"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && filtered.length === 0 && (
+          <div className="rounded-lg border border-border/60 bg-card/60 p-6 text-center text-primary">
+            <p className="mb-2 font-semibold text-text">No deployments to show.</p>
+            <p className="text-sm">Adjust filters or trigger a deployment to see it listed.</p>
+            <button
+              onClick={load}
+              className="mt-4 rounded-lg border border-border/70 px-4 py-2 text-sm font-semibold text-text hover:bg-card"
+            >
+              Reload
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && filtered.length > 0 && (
+          <div className="overflow-x-auto rounded-xl border border-border/70 bg-card/60">
+            <table className="min-w-full text-sm">
+              <thead className="bg-card/80 text-primary">
+                <tr>
+                  <th className="text-left px-4 py-2">Project</th>
+                  <th className="text-left px-4 py-2">Environment</th>
+                  <th className="text-left px-4 py-2">Status</th>
+                  <th className="text-left px-4 py-2">Version</th>
+                  <th className="text-left px-4 py-2">Branch</th>
+                  <th className="text-left px-4 py-2">Started</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((d) => {
+                  const env = environments.find((e) => e.id === d.environmentId);
+                  return (
+                    <tr key={d.id} className="border-t border-border/60 hover:bg-card/60">
+                      <td className="px-4 py-3 text-text">{env?.projectName}</td>
+                      <td className="px-4 py-3 text-primary">{env?.name}</td>
+                      <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
+                      <td className="px-4 py-3 text-text">{d.version}</td>
+                      <td className="px-4 py-3 text-primary">{d.branch}</td>
+                      <td className="px-4 py-3 text-primary">{new Date(d.startedAt).toLocaleString()}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
     </div>
   );

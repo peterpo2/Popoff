@@ -12,12 +12,31 @@ const navItems = [
   { path: '/settings', label: 'Settings' },
 ];
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
-    <aside className="w-64 shrink-0 px-5 py-6 glass-panel border-r border-border/70 relative z-10">
-      <div className="mb-10">
-        <div className="text-2xl font-semibold text-text text-glow">Popoff CRM</div>
-        <p className="text-sm text-primary">The Cozy Code Realm</p>
+    <aside
+      className={`fixed inset-y-0 left-0 z-30 w-64 shrink-0 px-5 py-6 glass-panel border-r border-border/70 shadow-soft/40 transition-transform duration-200 md:static md:z-10 md:translate-x-0 md:shadow-none ${
+        isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}
+    >
+      <div className="mb-10 flex items-start justify-between gap-3">
+        <div>
+          <div className="text-2xl font-semibold text-text text-glow">Popoff CRM</div>
+          <p className="text-sm text-primary">The Cozy Code Realm</p>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-border/70 px-2 py-1 text-xs text-primary transition hover:text-text md:hidden"
+          >
+            Close
+          </button>
+        )}
       </div>
       <nav className="space-y-2">
         {navItems.map((item) => (
