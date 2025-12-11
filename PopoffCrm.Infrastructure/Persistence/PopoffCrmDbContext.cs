@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PopoffCrm.Application.Common;
 using PopoffCrm.Domain.Entities;
 using PopoffCrm.Infrastructure.Extensions;
+using PopoffCrm.Infrastructure.Persistence.Configurations;
 using EnvironmentEntity = PopoffCrm.Domain.Entities.Environment;
 
 namespace PopoffCrm.Infrastructure.Persistence;
@@ -14,6 +15,9 @@ public class PopoffCrmDbContext : DbContext
     public DbSet<EnvironmentEntity> Environments => Set<EnvironmentEntity>();
     public DbSet<Deployment> Deployments => Set<Deployment>();
     public DbSet<HealthCheckResult> HealthCheckResults => Set<HealthCheckResult>();
+    public DbSet<ProjectErrorLog> ProjectErrorLogs => Set<ProjectErrorLog>();
+    public DbSet<ProjectAuditLog> ProjectAuditLogs => Set<ProjectAuditLog>();
+    public DbSet<ProjectPerformanceLog> ProjectPerformanceLogs => Set<ProjectPerformanceLog>();
 
     public PopoffCrmDbContext(DbContextOptions options) : base(options)
     {
@@ -51,6 +55,10 @@ public class PopoffCrmDbContext : DbContext
             .HasOne(h => h.Environment)
             .WithMany(e => e.HealthChecks)
             .HasForeignKey(h => h.EnvironmentId);
+
+        modelBuilder.ApplyConfiguration(new ProjectErrorLogConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectAuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectPerformanceLogConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

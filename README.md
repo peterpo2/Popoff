@@ -21,7 +21,7 @@ The backend powers an internal control plane for managing your own web applicati
 The solution is split into four projects that align with clean architecture principles.
 
 ### PopoffCrm.Domain
-- **Entities**: `User`, `Server`, `Project`, `Environment`, `Deployment`, `HealthCheckResult`.
+- **Entities**: `User`, `Server`, `Project`, `Environment`, `Deployment`, `HealthCheckResult`, `ProjectErrorLog`, `ProjectAuditLog`, `ProjectPerformanceLog`.
 - **Enums**: `DeploymentStatus`, `HealthStatus`.
 - **Base**: `AuditedEntity` adds `CreatedOn`, `UpdatedOn`, and `IsDeleted` to every entity.
 
@@ -165,9 +165,63 @@ If you enable automatic migration execution in `Program.cs` (e.g., `Database.Mig
 | GET | `/api/deployments` | List deployments. |
 | POST | `/api/environments/{environmentId}/deploy` | Trigger a deployment for an environment. |
 | GET | `/api/health/overview` | High-level health status. |
-| GET | `/api/logs/environment/{environmentId}?tail=200` | Tail logs for an environment. |
+| GET | `/api/logs/environment/{environmentId}?tail=200` | Tail container logs for an environment. |
+| POST | `/api/logs/error` | Create a structured project error log. |
+| POST | `/api/logs/audit` | Record an audit entry for a project/environment. |
+| POST | `/api/logs/performance` | Submit a performance log (flags slow calls). |
+| GET | `/api/logs/error?projectId=&env=&severity=&text=` | Query error logs by project, environment, severity, or text. |
+| GET | `/api/logs/performance?projectId=&env=&slowOnly=` | Query performance logs; filter to slow entries. |
 
 Swagger provides the complete contract at `/swagger` once the API is running.
+
+---
+
+## Posting Logs from External Servers
+
+Projects can stream telemetry into Popoff CRM from outside the cluster (e.g., production web servers) over HTTPS:
+
+1. **Obtain a JWT**: call `POST /api/auth/login` (or your SSO flow) and save the `accessToken`.
+2. **Use your public API URL**: set `PUBLIC_BASE_URL` to the HTTPS endpoint that exposes the API and enable TLS termination (e.g., via a reverse proxy). `EnableHttpsRedirection` can be set in appsettings to force HTTPS when the API is hosted directly.
+3. **Send logs with Bearer auth**. Examples:
+
+   ```bash
+   # Error log
+   curl -X POST "$PUBLIC_BASE_URL/api/logs/error" \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "projectId": "<project-guid>",
+           "environmentId": "<environment-guid>",
+           "occurredOn": "2025-01-01T12:00:00Z",
+           "errorType": "UnhandledException",
+           "message": "Failed to process request",
+           "details": "Stack trace...",
+           "source": "api",
+           "severity": 3,
+           "correlationId": "trace-id-123",
+           "requestData": "{ \"path\": \"/orders\" }"
+         }'
+
+   # Performance log (auto-flags slow calls when duration exceeds threshold)
+   curl -X POST "$PUBLIC_BASE_URL/api/logs/performance" \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "projectId": "<project-guid>",
+           "environmentId": "<environment-guid>",
+           "timestamp": "2025-01-01T12:00:05Z",
+           "operationName": "GET /orders",
+           "durationMs": 850,
+           "thresholdMs": 500,
+           "details": "Fetched 200 orders"
+         }'
+   ```
+
+4. **Query logs** as needed:
+   - Errors: `GET /api/logs/error?projectId=<id>&env=<envId>&severity=2&text=timeout`
+   - Performance: `GET /api/logs/performance?projectId=<id>&env=<envId>&slowOnly=true`
+
+Requests validate that the specified `projectId` and `environmentId` exist before persisting data, so mismatches return `404` with a helpful message.
 
 ---
 

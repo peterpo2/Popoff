@@ -66,4 +66,50 @@ public static class MappingExtensions
         result.ResponseTimeMs,
         result.StatusCode,
         result.Message);
+
+    public static ProjectErrorLogDto ToDto(this ProjectErrorLog log) => new(
+        log.Id,
+        log.ProjectId,
+        log.EnvironmentId,
+        log.OccurredOn,
+        log.ErrorType,
+        log.Message,
+        log.Details,
+        log.Source,
+        log.Severity,
+        log.CorrelationId,
+        log.RequestData,
+        log.UserId,
+        log.IsResolved,
+        log.ResolvedOn,
+        log.ResolvedByUserId,
+        log.CreatedOn,
+        log.UpdatedOn);
+
+    public static ProjectAuditLogDto ToDto(this ProjectAuditLog log) => new(
+        log.Id,
+        log.ProjectId,
+        log.EnvironmentId,
+        log.Timestamp,
+        log.ActionType,
+        log.Message,
+        log.Data,
+        log.UserId,
+        log.CorrelationId,
+        log.Origin,
+        log.CreatedOn,
+        log.UpdatedOn);
+
+    public static ProjectPerformanceLogDto ToDto(this ProjectPerformanceLog log) => new(
+        log.Id,
+        log.ProjectId,
+        log.EnvironmentId,
+        log.Timestamp,
+        log.OperationName,
+        log.DurationMs,
+        log.ThresholdMs,
+        log.IsSlow,
+        log.Details,
+        log.CreatedOn,
+        log.UpdatedOn);
 }
