@@ -39,6 +39,16 @@ The solution is split into four projects that align with clean architecture prin
 - **Controllers**: `AuthController`, `ProjectsController`, `ServersController`, `EnvironmentsController`, `DeploymentsController`, `HealthController`, `LogsController`.
 - **Security**: JWT authentication middleware configured via configuration/environment variables.
 
+## Configuration model
+
+- **appsettings.json**: Baseline defaults.
+- **appsettings.Production.json**: Defines the primary VPS connection, Docker socket, CRM database connection, and JWT settings. Sensitive details (API keys, IPs) remain here instead of the database.
+- **appsettings.Development.json**: Local developer defaults. Docker is disabled by default and external agents/URLs can point to test VPSs.
+- **appsettings.Local.json**: Optional per-user overrides for local experiments.
+- **CoreServerConfig / ExternalServerConfig / DockerConfig**: Strongly typed bindings loaded in `Program.cs` via `services.Configure<T>(configuration.GetSection("SectionName"))`.
+- **Database safety**: The `Server` entity stores only logical references—`Name`, `Type` (`LocalDocker` or `RemoteAgent`), and a `ReferenceKey` that matches configuration entries. IPs, sockets, and API keys never enter the CRM database.
+- **Runtime resolution**: When deployments/logs/health checks run, the app reads the logical server from the database and resolves the real connection from the active `appsettings.*` files. Local Docker uses `DockerConfig`; RemoteAgent uses matching `ExternalServerConfig` by name.
+
 ---
 
 ## Tech Stack

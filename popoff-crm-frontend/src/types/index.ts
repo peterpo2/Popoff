@@ -21,11 +21,9 @@ export interface Project {
 export interface Server {
   id: string;
   name: string;
-  ipAddress: string;
-  hostName?: string | null;
+  referenceKey: string;
+  type: string;
   isActive: boolean;
-  connectionType: string;
-  connectionData?: string | null;
   description?: string | null;
 }
 

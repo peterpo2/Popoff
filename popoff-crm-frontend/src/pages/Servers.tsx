@@ -71,7 +71,8 @@ export const Servers: React.FC = () => {
                   <div>
                     <h4 className="text-xl font-semibold text-text">{server.name}</h4>
                     <p className="text-primary text-sm">{server.description}</p>
-                    <div className="text-sm text-primary">IP: {server.ipAddress}</div>
+                    <div className="text-sm text-primary">Type: {server.type}</div>
+                    <div className="text-sm text-primary">Reference: {server.referenceKey}</div>
                   </div>
                   <Link to={`/servers/${server.id}`} className="text-accent-2 text-sm font-semibold hover:underline">
                     View server →

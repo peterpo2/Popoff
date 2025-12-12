@@ -4,29 +4,24 @@ public class Server : AuditedEntity
 {
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
-    public string? HostName { get; set; }
-    public string IpAddress { get; set; } = null!;
-    public string ConnectionType { get; set; } = "LocalShell";
     /// <summary>
-    /// Additional connection details. When <see cref="ConnectionType"/> is "RemoteAgent",
-    /// this property should contain JSON with the agent base URL and API key, for example:
-    /// <code>
-    /// {
-    ///   "baseUrl": "https://agent-hetzner2.example.com",
-    ///   "apiKey": "secret-token"
-    /// }
-    /// </code>
+    /// Logical server type. Only "LocalDocker" and "RemoteAgent" are allowed so that the
+    /// database never needs to store transport details or API credentials.
     /// </summary>
-    public string? ConnectionData { get; set; }
-
-    public static string RemoteAgentConnectionDataExample => """
-    {
-      "baseUrl": "https://agent-hetzner2.example.com",
-      "apiKey": "secret-token"
-    }
-    """;
+    public string Type { get; set; } = ServerTypes.LocalDocker;
+    /// <summary>
+    /// Logical lookup key that maps this record to an entry in appsettings.* files. The
+    /// CRM never keeps IP addresses or API keys in the database—only this reference key.
+    /// </summary>
+    public string ReferenceKey { get; set; } = null!;
 
     public bool IsActive { get; set; }
 
     public ICollection<Environment> Environments { get; set; } = new List<Environment>();
+}
+
+public static class ServerTypes
+{
+    public const string LocalDocker = "LocalDocker";
+    public const string RemoteAgent = "RemoteAgent";
 }

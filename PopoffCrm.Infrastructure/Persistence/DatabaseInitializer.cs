@@ -146,10 +146,8 @@ internal class DatabaseInitializer : IDatabaseInitializer
                 Id = ServerId,
                 Name = "Local-Docker-Host",
                 Description = "Placeholder server running in docker-compose for local testing.",
-                HostName = "localhost",
-                IpAddress = "127.0.0.1",
-                ConnectionType = "LocalShell",
-                ConnectionData = null,
+                Type = ServerTypes.LocalDocker,
+                ReferenceKey = "Local-Docker-Host",
                 IsActive = true,
                 CreatedOn = createdOn,
                 IsDeleted = false

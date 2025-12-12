@@ -46,7 +46,10 @@ public class DeploymentController : ControllerBase
     [HttpPost("/api/environments/{environmentId}/deploy")]
     public async Task<ActionResult<DeploymentDto>> DeployEnvironment(Guid environmentId)
     {
-        var env = await _dbContext.Environments.Include(e => e.Project).FirstOrDefaultAsync(e => e.Id == environmentId);
+        var env = await _dbContext.Environments
+            .Include(e => e.Project)
+            .Include(e => e.Server)
+            .FirstOrDefaultAsync(e => e.Id == environmentId);
         if (env == null)
         {
             return NotFound();

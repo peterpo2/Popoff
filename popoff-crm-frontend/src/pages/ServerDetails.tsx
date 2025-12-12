@@ -25,8 +25,11 @@ export const ServerDetails: React.FC = () => {
       <Card>
         <h2 className="text-2xl font-semibold text-text">{server.name}</h2>
         <p className="text-primary">{server.description}</p>
-        <div className="text-sm text-primary mt-2">IP: {server.ipAddress}</div>
-        <div className="text-sm text-primary">Connection: {server.connectionType}</div>
+        <div className="text-sm text-primary mt-2">Type: {server.type}</div>
+        <div className="text-sm text-primary">Reference: {server.referenceKey}</div>
+        <div className="text-xs text-primary mt-2">
+          Sensitive connection details stay in appsettings.* files; the CRM only keeps this logical reference.
+        </div>
       </Card>
 
       <Card>

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using PopoffCrm.Application.Common;
 using PopoffCrm.Application.Interfaces;
+using PopoffCrm.Domain.Entities;
 using EnvironmentEntity = PopoffCrm.Domain.Entities.Environment;
 
 namespace PopoffCrm.Infrastructure.Services;
@@ -10,8 +11,21 @@ public class DockerService : IDockerService
 {
     private const int DefaultTimeoutMs = 300000;
 
+    private readonly IServerConnectionResolver _serverResolver;
+
+    public DockerService(IServerConnectionResolver serverResolver)
+    {
+        _serverResolver = serverResolver;
+    }
+
     public async Task<DeploymentResult> DeployEnvironmentAsync(EnvironmentEntity env)
     {
+        var resolution = await RequireLocalDockerAsync(env);
+        if (resolution.Docker is { Enabled: false })
+        {
+            return new DeploymentResult(false, "Docker is disabled in the current configuration profile.");
+        }
+
         if (string.IsNullOrWhiteSpace(env.DockerComposePath))
         {
             return new DeploymentResult(false, "Docker compose path is not configured for this environment.");
@@ -32,7 +46,7 @@ public class DockerService : IDockerService
         }
 
         var composeArgs = $"compose -p {projectName} -f {env.DockerComposePath} up --build -d";
-        var composeResult = await RunCommandAsync("docker", composeArgs, workingDirectory);
+        var composeResult = await RunCommandAsync("docker", composeArgs, workingDirectory, resolution.Docker?.SocketPath);
         output.Add($"docker {composeArgs}: {composeResult}");
 
         var success = !string.IsNullOrWhiteSpace(composeResult);
@@ -41,6 +55,12 @@ public class DockerService : IDockerService
 
     public async Task<string> GetLogs(EnvironmentEntity env, int tail)
     {
+        var resolution = await RequireLocalDockerAsync(env);
+        if (resolution.Docker is { Enabled: false })
+        {
+            return "Docker is disabled in the current configuration profile.";
+        }
+
         var containerName = env.DockerProjectName ?? env.Slug;
         if (string.IsNullOrWhiteSpace(containerName))
         {
@@ -49,12 +69,13 @@ public class DockerService : IDockerService
 
         var args = $"logs {containerName} --tail {tail}";
         var workingDirectory = GetWorkingDirectory(env.DockerComposePath);
-        return await RunCommandAsync("docker", args, workingDirectory);
+        return await RunCommandAsync("docker", args, workingDirectory, resolution.Docker?.SocketPath);
     }
 
     public async Task<bool> RestartEnvironmentAsync(EnvironmentEntity env)
     {
-        if (string.IsNullOrWhiteSpace(env.DockerComposePath))
+        var resolution = await RequireLocalDockerAsync(env);
+        if (resolution.Docker is { Enabled: false } || string.IsNullOrWhiteSpace(env.DockerComposePath))
         {
             return false;
         }
@@ -63,7 +84,7 @@ public class DockerService : IDockerService
         var args = string.IsNullOrWhiteSpace(projectName)
             ? $"compose -f {env.DockerComposePath} restart"
             : $"compose -p {projectName} -f {env.DockerComposePath} restart";
-        var result = await RunCommandAsync("docker", args, GetWorkingDirectory(env.DockerComposePath));
+        var result = await RunCommandAsync("docker", args, GetWorkingDirectory(env.DockerComposePath), resolution.Docker?.SocketPath);
         return !string.IsNullOrWhiteSpace(result);
     }
 
@@ -78,7 +99,23 @@ public class DockerService : IDockerService
         return string.IsNullOrWhiteSpace(directory) ? null : directory;
     }
 
-    private static async Task<string> RunCommandAsync(string fileName, string arguments, string? workingDirectory)
+    private async Task<ServerResolution> RequireLocalDockerAsync(EnvironmentEntity env)
+    {
+        if (env.Server == null)
+        {
+            throw new InvalidOperationException("Environment is missing its server mapping.");
+        }
+
+        var resolution = await _serverResolver.ResolveAsync(env.Server);
+        if (resolution.Type != ServerConnectionType.LocalDocker)
+        {
+            throw new InvalidOperationException($"Environment {env.Name} points to a non-docker server: {resolution.ReferenceKey}.");
+        }
+
+        return resolution;
+    }
+
+    private static async Task<string> RunCommandAsync(string fileName, string arguments, string? workingDirectory, string? socketPath)
     {
         var psi = new ProcessStartInfo
         {
@@ -93,6 +130,11 @@ public class DockerService : IDockerService
         if (!string.IsNullOrWhiteSpace(workingDirectory))
         {
             psi.WorkingDirectory = workingDirectory;
+        }
+
+        if (!string.IsNullOrWhiteSpace(socketPath))
+        {
+            psi.Environment["DOCKER_HOST"] = $"unix://{socketPath}";
         }
 
         using var process = new Process { StartInfo = psi };

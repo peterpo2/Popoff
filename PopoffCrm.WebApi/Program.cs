@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PopoffCrm.Infrastructure;
 using PopoffCrm.Infrastructure.Persistence;
+using PopoffCrm.Infrastructure.Settings;
 using PopoffCrm.WebApi.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,9 @@ builder.Services.AddControllers();
 // Bind settings from configuration/environment variables (see docker-compose and .env.example)
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.Configure<AppUrlsSettings>(builder.Configuration.GetSection(AppUrlsSettings.SectionName));
+builder.Services.Configure<CoreServerConfig[]>(builder.Configuration.GetSection(CoreServerConfig.SectionName));
+builder.Services.Configure<DockerConfig>(builder.Configuration.GetSection(DockerConfig.SectionName));
+builder.Services.Configure<ExternalServerRegistry>(builder.Configuration.GetSection(ExternalServerRegistry.SectionName));
 
 builder.Services.AddOptions<GoogleAuthSettings>()
     .Bind(builder.Configuration.GetSection(GoogleAuthSettings.SectionName))

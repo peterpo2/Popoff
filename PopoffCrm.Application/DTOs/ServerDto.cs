@@ -3,9 +3,7 @@ namespace PopoffCrm.Application.DTOs;
 public record ServerDto(
     Guid Id,
     string Name,
-    string IpAddress,
-    string? HostName,
+    string ReferenceKey,
+    string Type,
     bool IsActive,
-    string ConnectionType,
-    string? ConnectionData,
     string? Description);

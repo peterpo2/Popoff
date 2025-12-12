@@ -71,6 +71,8 @@ export const apiClient = {
   getProjects: () => withFallback(fetchProjects, () => mockClient.getProjects()),
   getProject: (id: string) =>
     withFallback(() => httpClient.get<Project>(`/api/project/${id}`), () => mockClient.getProject(id)),
+  createProject: (payload: Partial<Project>) =>
+    withFallback(() => httpClient.post<Project>('/api/project', payload), () => mockClient.createProject(payload)),
   getServers: () => withFallback(fetchServers, () => mockClient.getServers()),
   getServer: (id: string) =>
     withFallback(() => httpClient.get<Server>(`/api/server/${id}`), () => mockClient.getServer(id)),
@@ -78,6 +80,13 @@ export const apiClient = {
     withFallback(
       () => httpClient.get<Environment[]>(`/api/environments/by-project/${projectId}`),
       () => mockClient.getEnvironmentsByProject(projectId)
+    ),
+  createEnvironment: (payload: Partial<Environment>) =>
+    withFallback(() => httpClient.post<Environment>('/api/environment', payload), () => mockClient.createEnvironment(payload)),
+  updateEnvironment: (id: string, payload: Partial<Environment>) =>
+    withFallback(
+      () => httpClient.put<Environment>(`/api/environment/${id}`, payload),
+      () => mockClient.updateEnvironment(id, payload)
     ),
   getEnvironment: (id: string) =>
     withFallback(() => httpClient.get<Environment>(`/api/environment/${id}`), () => mockClient.getEnvironment(id)),

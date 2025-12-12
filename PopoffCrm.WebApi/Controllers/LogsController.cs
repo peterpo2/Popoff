@@ -27,7 +27,9 @@ public class LogsController : ControllerBase
     [HttpGet("environment/{environmentId}")]
     public async Task<ActionResult<string>> GetEnvironmentLogs(Guid environmentId, [FromQuery] int tail = 200)
     {
-        var env = await _dbContext.Environments.AsNoTracking().FirstOrDefaultAsync(e => e.Id == environmentId);
+        var env = await _dbContext.Environments.AsNoTracking()
+            .Include(e => e.Server)
+            .FirstOrDefaultAsync(e => e.Id == environmentId);
         if (env == null)
         {
             return NotFound();

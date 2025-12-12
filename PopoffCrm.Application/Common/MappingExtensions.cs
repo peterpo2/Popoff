@@ -13,11 +13,9 @@ public static class MappingExtensions
     public static ServerDto ToDto(this Server server) => new(
         server.Id,
         server.Name,
-        server.IpAddress,
-        server.HostName,
+        server.ReferenceKey,
+        server.Type,
         server.IsActive,
-        server.ConnectionType,
-        server.ConnectionData,
         server.Description);
 
     public static EnvironmentDto ToDto(this EnvironmentEntity env) => new(

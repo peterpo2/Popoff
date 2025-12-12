@@ -10,6 +10,7 @@ export const Projects: React.FC = () => {
   const [environments, setEnvironments] = useState<EnvironmentWithProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [newProject, setNewProject] = useState({ name: '', code: '', description: '', repositoryUrl: '' });
   const { showToast } = useToast();
 
   const load = useCallback(async () => {
@@ -31,6 +32,17 @@ export const Projects: React.FC = () => {
     load();
   }, [load]);
 
+  const handleCreateProject = async () => {
+    try {
+      const created = await apiClient.createProject(newProject);
+      setProjects((prev) => [...prev, created]);
+      setNewProject({ name: '', code: '', description: '', repositoryUrl: '' });
+      showToast({ type: 'success', title: 'Project created', message: 'Logical project added without sensitive config.' });
+    } catch (err) {
+      showToast({ type: 'error', title: 'Projects', message: 'Unable to create project right now.' });
+    }
+  };
+
   const environmentCounts = environments.reduce<Record<string, number>>((acc, env) => {
     acc[env.projectId] = (acc[env.projectId] ?? 0) + 1;
     return acc;
@@ -42,6 +54,52 @@ export const Projects: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Projects</h3>
           <span className="text-primary text-sm">{projects.length} total</span>
+        </div>
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-xs text-primary block">Name</label>
+            <input
+              className="w-full rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-sm text-text"
+              value={newProject.name}
+              onChange={(e) => setNewProject((prev) => ({ ...prev, name: e.target.value }))}
+              placeholder="Project name"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-primary block">Code</label>
+            <input
+              className="w-full rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-sm text-text"
+              value={newProject.code}
+              onChange={(e) => setNewProject((prev) => ({ ...prev, code: e.target.value }))}
+              placeholder="Short code"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-primary block">Description (logical only)</label>
+            <input
+              className="w-full rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-sm text-text"
+              value={newProject.description}
+              onChange={(e) => setNewProject((prev) => ({ ...prev, description: e.target.value }))}
+              placeholder="No secrets or credentials"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-primary block">Repository URL</label>
+            <input
+              className="w-full rounded-lg border border-border/60 bg-card/40 px-3 py-2 text-sm text-text"
+              value={newProject.repositoryUrl}
+              onChange={(e) => setNewProject((prev) => ({ ...prev, repositoryUrl: e.target.value }))}
+              placeholder="https://..."
+            />
+          </div>
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              onClick={handleCreateProject}
+              className="rounded-lg bg-accent-2/20 border border-accent-2/40 text-accent-2 px-4 py-2 text-sm font-semibold hover:shadow-glow"
+            >
+              Add project
+            </button>
+          </div>
         </div>
         {loading && <div className="text-primary">Loading projects...</div>}
 

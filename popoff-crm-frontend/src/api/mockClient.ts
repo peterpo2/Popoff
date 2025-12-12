@@ -23,20 +23,16 @@ const servers: Server[] = [
     id: '5b9ccebe-0c09-4f71-9f9c-b19ec4e1c001',
     name: 'Hetzner-Prod-1',
     description: 'Primary production server running Docker',
-    hostName: 'prod-1.crm.popoff.com',
-    ipAddress: '144.76.21.10',
-    connectionType: 'LocalShell',
-    connectionData: '{}',
+    referenceKey: 'Hetzner-Prod-1',
+    type: 'LocalDocker',
     isActive: true,
   },
   {
     id: '7f08bfc4-9585-4a1c-8ae2-20812a534002',
     name: 'Hetzner-Test-1',
     description: 'Test workloads and staging',
-    hostName: 'test-1.crm.popoff.com',
-    ipAddress: '144.76.21.11',
-    connectionType: 'LocalShell',
-    connectionData: '{}',
+    referenceKey: 'Hetzner-Test-1',
+    type: 'LocalDocker',
     isActive: true,
   },
 ];
@@ -261,6 +257,47 @@ export const mockClient = {
   async getServer(id: string) {
     await delay();
     return servers.find((s) => s.id === id) ?? null;
+  },
+  async createProject(payload: Partial<Project>) {
+    await delay();
+    const project: Project = {
+      id: crypto.randomUUID(),
+      name: payload.name ?? 'New Project',
+      code: payload.code ?? 'NEW',
+      description: payload.description,
+      repositoryUrl: payload.repositoryUrl,
+      createdOn: new Date().toISOString(),
+    };
+    projects.push(project);
+    return project;
+  },
+  async createEnvironment(payload: Partial<Environment>) {
+    await delay();
+    const environment: Environment = {
+      id: crypto.randomUUID(),
+      projectId: payload.projectId!,
+      serverId: payload.serverId!,
+      name: payload.name ?? 'New Environment',
+      slug: payload.slug ?? 'new-env',
+      isProduction: payload.isProduction ?? false,
+      frontendUrl: payload.frontendUrl,
+      apiUrl: payload.apiUrl,
+      dockerComposePath: payload.dockerComposePath,
+      dockerProjectName: payload.dockerProjectName,
+      gitBranch: payload.gitBranch,
+      projectName: payload.projectName ?? 'Project',
+      projectCode: payload.projectCode ?? 'NEW',
+      serverName: payload.serverName ?? 'Server',
+    };
+    environments.push(environment);
+    return environment;
+  },
+  async updateEnvironment(id: string, payload: Partial<Environment>) {
+    await delay();
+    const idx = environments.findIndex((env) => env.id === id);
+    if (idx === -1) return null;
+    environments[idx] = { ...environments[idx], ...payload } as Environment;
+    return environments[idx];
   },
   async getEnvironmentsByProject(projectId: string) {
     await delay();
