@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PopoffCrm.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c64cd1e03c926bb2a99ffa138a2d454d85eecd2a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2d977b265eda63e05203db2e77967fbbba446c70")]
 [assembly: System.Reflection.AssemblyProductAttribute("PopoffCrm.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PopoffCrm.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
