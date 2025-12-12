@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -106,6 +107,49 @@ public class HealthCheckBackgroundService : BackgroundService
             };
 
             dbContext.HealthCheckResults.Add(result);
+
+            if (status != HealthStatus.Healthy)
+            {
+                var severity = status == HealthStatus.Down ? 3 : 1;
+                var correlationId = Guid.NewGuid().ToString();
+
+                var detailsBuilder = new StringBuilder();
+                detailsBuilder.AppendLine($"Health check status: {status}");
+                detailsBuilder.AppendLine($"Url: {url}");
+                detailsBuilder.AppendLine($"Response time (ms): {stopwatch.ElapsedMilliseconds}");
+
+                if (response != null)
+                {
+                    detailsBuilder.AppendLine($"HTTP status: {(int)response.StatusCode} ({response.StatusCode})");
+                }
+
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    detailsBuilder.AppendLine($"Message: {message}");
+                }
+
+                var errorLog = new ProjectErrorLog
+                {
+                    Id = Guid.NewGuid(),
+                    ProjectId = env.ProjectId,
+                    EnvironmentId = env.Id,
+                    OccurredOn = DateTime.UtcNow,
+                    ErrorType = "HealthCheckFailure",
+                    Message = status == HealthStatus.Down
+                        ? $"Health check failed for environment {env.Name}"
+                        : $"Health check degraded for environment {env.Name}",
+                    Details = detailsBuilder.ToString(),
+                    Source = "HealthCheckBackgroundService",
+                    Severity = severity,
+                    CorrelationId = correlationId,
+                    RequestData = url,
+                    IsResolved = false
+                };
+
+                dbContext.ProjectErrorLogs.Add(errorLog);
+            }
+
+            response?.Dispose();
             await dbContext.SaveChangesAsync(cancellationToken);
         }
     }
